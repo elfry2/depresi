@@ -1,5 +1,5 @@
 # Depression
-A depression diagnosis expert system I wrote for my thesis.
+An expert system aimed to help diagnose depression and similar disorders, that I wrote for my thesis.
 
 ![image](https://user-images.githubusercontent.com/47256917/224464594-483a4a75-01c9-4bbe-be68-1fa80fcf536f.png)
 # Installation
