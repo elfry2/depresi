@@ -1,0 +1,26 @@
+body, html {
+    height: 100%;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+@media print
+{    
+    .hide-on-print {
+        display: none !important;
+    }
+}
+
+@media only screen and (max-width: 960px) {
+    .hide-on-small-screens {
+        display: none !important;
+    }
+}
+
+@media only screen and (min-width: 961px) {
+    .hide-on-big-screens {
+        display: none !important;
+    }
+}
