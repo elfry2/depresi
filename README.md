@@ -1,7 +1,7 @@
 # Depression
 An expert system aimed to help diagnose depression and similar disorders, which I wrote for my thesis.
 
-![image](https://user-images.githubusercontent.com/47256917/224464594-483a4a75-01c9-4bbe-be68-1fa80fcf536f.png)
+![image](https://user-images.githubusercontent.com/47256917/224542655-98557d26-a7b5-48a1-a34d-42ea4eac55d9.png)
 # Installation
 Create a database and edit the ```.env``` file to match your environment configuration, then run ```composer update && php artisan migrate:fresh --seed```.
 # Usage
