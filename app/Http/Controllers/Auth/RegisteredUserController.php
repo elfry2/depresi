@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Auth\Events\Registered;
 use App\Providers\RouteServiceProvider;
 use App\Http\Controllers\PreferenceController;
+use App\Models\Preference;
 
 class RegisteredUserController extends Controller
 {
@@ -93,6 +94,8 @@ class RegisteredUserController extends Controller
 
     public function destroy(User $user)
     {
+        Preference::where('user_id', $user->id)->delete();
+        
         $user->delete();
 
         return redirect('/users')
