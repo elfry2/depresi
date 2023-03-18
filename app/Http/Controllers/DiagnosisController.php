@@ -325,7 +325,7 @@ class DiagnosisController extends Controller
 
             $diseases = Disease::all();
     
-            // P(H|EF) = P(E|H)(F|H)P(H)/(P(E|H)(F|H)P(H)+...)
+            /** P(H|EF) = P(E|H)(F|H)P(H)/(P(E|H)(F|H)P(H)+...) */
     
             $numerator
             = Disease::find($rule->consequent_disease->disease_id)->probability;
