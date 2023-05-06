@@ -25,7 +25,7 @@ use App\Http\Controllers\DiagnosisController;
 
 Route::get('/', function () {
     // return view('welcome');
-    return redirect('/login');
+    return view('home.index');
 });
 
 Route::get('/diagnosis', [DiagnosisController::class, 'index']);

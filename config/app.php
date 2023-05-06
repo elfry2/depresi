@@ -214,6 +214,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'description' => 'Sistem Pakar Diagnosis Awal Depresi Menggunakan Metode Naive Bayes',
+
     'dev' => [
         'name' => 'Elfry',
         'email' => 'elfry3@gmail.com',
