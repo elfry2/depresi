@@ -18,35 +18,35 @@ class DiseaseSeeder extends Seeder
         foreach([
             [
                 'name' => 'Gangguan Depresif Mayor',
-                'probability' => 0
+                'probability' => 0.6
             ],
             [
                 'name' => 'Depresi Hipomanik',
-                'probability' => 0
+                'probability' => 0.4
             ],
             [
                 'name' => 'Depresi Psikotik',
-                'probability' => 0
+                'probability' => 0.1
             ],
             [
                 'name' => 'Depresi Melankolik',
-                'probability' => 0
+                'probability' => 0.1
             ],
             [
                 'name' => 'Depresi Pasca-Melahirkan',
-                'probability' => 0
+                'probability' => 0.3
             ],
             [
                 'name' => 'Depresi Musiman',
-                'probability' => 0
+                'probability' => 0.4
             ],
             [
                 'name' => 'Distimia',
-                'probability' => 0
+                'probability' => 0.2
             ],
             [
                 'name' => 'Gangguan Siklotimik',
-                'probability' => 0
+                'probability' => 0.1
             ],
             
         ] as $item) {

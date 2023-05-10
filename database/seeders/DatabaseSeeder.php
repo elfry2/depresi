@@ -33,8 +33,10 @@ class DatabaseSeeder extends Seeder
         foreach([
             RoleSeeder::class,
             UserSeeder::class,
+            ExpertSeeder::class,
             DiseaseSeeder::class,
-            SymptomSeeder::class
+            SymptomSeeder::class,
+            ProbabilitySeeder::class
         ] as $seeder) (new $seeder)->run();
     }
 }

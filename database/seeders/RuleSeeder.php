@@ -14,6 +14,6 @@ class RuleSeeder extends Seeder
      */
     public function run()
     {
-        //
+        
     }
 }
