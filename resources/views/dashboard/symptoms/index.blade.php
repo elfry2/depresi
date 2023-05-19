@@ -90,7 +90,7 @@
                     </tr>
                     <tr>
                         @foreach ($items2 as $item2)
-                            <th title="{{ $item2->name }}">P{{ $item2->id }}</th>
+                            <th title="{{ $item2->name }}">G{{ $item2->id }}</th>
                         @endforeach
                     </tr>
                 </thead>
