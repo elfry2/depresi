@@ -16,39 +16,51 @@ class DiseaseSeeder extends Seeder
     public function run()
     {
         foreach([
+            /* Look how they massacred my boy. */
+            // [
+            //     'name' => 'Gangguan Depresif Mayor',
+            //     'probability' => 0.6
+            // ],
+            // [
+            //     'name' => 'Depresi Hipomanik',
+            //     'probability' => 0.4
+            // ],
+            // [
+            //     'name' => 'Depresi Psikotik',
+            //     'probability' => 0.1
+            // ],
+            // [
+            //     'name' => 'Depresi Melankolik',
+            //     'probability' => 0.1
+            // ],
+            // [
+            //     'name' => 'Depresi Pasca-Melahirkan',
+            //     'probability' => 0.3
+            // ],
+            // [
+            //     'name' => 'Depresi Musiman',
+            //     'probability' => 0.4
+            // ],
+            // [
+            //     'name' => 'Distimia',
+            //     'probability' => 0.2
+            // ],
+            // [
+            //     'name' => 'Gangguan Siklotimik',
+            //     'probability' => 0.1
+            // ],
             [
-                'name' => 'Gangguan Depresif Mayor',
-                'probability' => 0.6
+                'name' => 'Depresi Ringan',
+                'probability' => '0.33'
             ],
             [
-                'name' => 'Depresi Hipomanik',
-                'probability' => 0.4
+                'name' => 'Depresi Sedang',
+                'probability' => '0.33'
             ],
             [
-                'name' => 'Depresi Psikotik',
-                'probability' => 0.1
-            ],
-            [
-                'name' => 'Depresi Melankolik',
-                'probability' => 0.1
-            ],
-            [
-                'name' => 'Depresi Pasca-Melahirkan',
-                'probability' => 0.3
-            ],
-            [
-                'name' => 'Depresi Musiman',
-                'probability' => 0.4
-            ],
-            [
-                'name' => 'Distimia',
-                'probability' => 0.2
-            ],
-            [
-                'name' => 'Gangguan Siklotimik',
-                'probability' => 0.1
-            ],
-            
+                'name' => 'Depresi Berat',
+                'probability' => '0.33'
+            ]
         ] as $item) {
             Disease::create($item);
         }

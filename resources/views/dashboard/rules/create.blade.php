@@ -50,9 +50,9 @@
                         @endif
                     </div>
                     <div class="col">
-                        <h5>Penyakit yang dibangkitkan</h5>
+                        <h5>Gangguan yang dibangkitkan</h5>
                         @if ($items2->count() <= 0)
-                            <p class="text-muted">Belum ada penyakit. Klik pada menu Penyakit untuk menambahkan.</p>
+                            <p class="text-muted">Belum ada penyakit. Klik pada menu Gangguan untuk menambahkan.</p>
                         @else
                             <table class="table table-striped table-hover bg-white border">
                                 <tbody>

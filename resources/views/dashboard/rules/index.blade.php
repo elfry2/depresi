@@ -23,7 +23,7 @@
                         <th>Id.</th>
                         <th>Gejala yang dibutuhkan</th>
                         <th>Gejala yang dibangkitkan</th>
-                        <th>Penyakit yang dibangkitkan</th>
+                        <th>Gangguan yang dibangkitkan</th>
                         <th></th>
                     </tr>
                 </thead>

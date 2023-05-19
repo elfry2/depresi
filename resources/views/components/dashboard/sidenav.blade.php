@@ -1,7 +1,7 @@
 <ul class="mb-4 nav flex-column bg-white">
     <small class="fw-bold">Pengetahuan</small>
     <li class="nav-item mt-2">
-        <a class="nav-link text-dark @if(request()->is('diseases*')) bg-body-secondary rounded @endif" href="/diseases"><i class="bi-virus2 me-2"></i>Penyakit</a>
+        <a class="nav-link text-dark @if(request()->is('diseases*')) bg-body-secondary rounded @endif" href="/diseases"><i class="bi-virus2 me-2"></i>Gangguan</a>
     </li>
     <li class="nav-item mt-2">
         <a class="nav-link text-dark @if(request()->is('symptoms*')) bg-body-secondary rounded @endif" href="/symptoms"><i class="bi-file-earmark-medical me-2"></i>Gejala</a>

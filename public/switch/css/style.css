@@ -1290,7 +1290,7 @@ label {
     line-height: 16px;
     text-decoration: none !important;
     text-transform: uppercase;
-    background-color: #E9EDF3;
+    /* background-color: #E9EDF3; */
     color: #535FD7 !important;
     border: none;
     border-radius: 2px;
