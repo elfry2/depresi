@@ -16,7 +16,7 @@ use App\Http\Requests\UpdateDiagnosisRequest;
 
 class DiagnosisController extends Controller
 {
-    protected static $title = 'Diagnosis';
+    protected static $title = 'Skrining';
     protected static $resource = 'diagnosis';
 
     public static function applyRules($workspace)

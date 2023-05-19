@@ -34,7 +34,7 @@
 	                        <h1 class="hero-title mt-0">{{ config('app.name') }}</h1>
 	                        <p class="hero-paragraph">{{ config('app.description') }}</p>
 	                        <div class="hero-cta">
-								<a class="button button-primary" href="/diagnosis">Diagnosis</a>
+								<a class="button button-primary" href="/diagnosis">Skrining</a>
                                 <a class="button" href="/diseases">{{ Auth::id() ? 'Dasbor' : 'Masuk'}}</a>
 								{{-- <div class="lights-toggle">
 									<input id="lights-toggle" type="checkbox" name="lights-toggle" class="switch" checked="checked">

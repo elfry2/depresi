@@ -214,7 +214,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
-    'description' => 'Sistem Pakar Diagnosis Awal Depresi Menggunakan Metode Naive Bayes',
+    'description' => 'Sistem Pakar Skrining Awal Depresi Menggunakan Metode Naive Bayes',
 
     'dev' => [
         'name' => 'Elfry',

@@ -23,7 +23,7 @@
         <a class="nav-link text-dark" href="/"><i class="bi-house me-2"></i>Halaman awal</a>
     </li>
     <li class="nav-item mt-2">
-        <a class="nav-link text-dark" href="/diagnosis/create"><i class="bi-file-earmark-medical me-2"></i>Diagnosis</a>
+        <a class="nav-link text-dark" href="/diagnosis/create"><i class="bi-file-earmark-medical me-2"></i>Skrining</a>
     </li>
     <small class="mt-4 fw-bold">{{ Auth::user()->name }}</small>
     <li class="nav-item mt-2">

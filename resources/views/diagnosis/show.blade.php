@@ -33,7 +33,7 @@
                             @if ($item->isFound)
                                 <div class="row mt-5">
                                     <div class="col-lg">
-                                        <h5>Gejala-gejala penyakit:</h5>
+                                        <h5>Gejala-gejala gangguan:</h5>
                                         <ul>
                                             @foreach ($item->antecedents as $symptom)
                                                 <li>{{ $symptom }}</li>
