@@ -22,7 +22,7 @@ class DiseaseController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Penyakit',
+            'title' => 'Gangguan',
             'resource' => 'diseases',
             'items' => new Disease
         ];
@@ -57,7 +57,7 @@ class DiseaseController extends Controller
         // $items = $items->orderBy($sorting, $sortingDirection);
 
         // return view('diseases', [
-        //     'title' => 'Penyakit',
+        //     'title' => 'Gangguan',
         //     'items' => $items->paginate(config('app.itemsPerPage')),
         //     'resource' => $resource,
         //     'preferences' => [
@@ -95,7 +95,7 @@ class DiseaseController extends Controller
         return redirect('/diseases')
         ->with('message', (object) [
             'type' => 'success',
-            'content' => 'Penyakit berhasil ditambahkan.'
+            'content' => 'Gangguan berhasil ditambahkan.'
         ]);
     }
 
@@ -149,7 +149,7 @@ class DiseaseController extends Controller
         return redirect('/diseases')
         ->with('message', (object) [
             'type' => 'success',
-            'content' => 'Penyakit berhasil disunting.'
+            'content' => 'Gangguan berhasil disunting.'
         ]);
     }
 
@@ -170,7 +170,7 @@ class DiseaseController extends Controller
         return redirect('/diseases')
         ->with('message', (object) [
             'type' => 'success',
-            'content' => 'Penyakit berhasil dihapus.'
+            'content' => 'Gangguan berhasil dihapus.'
         ]);
     }
 }
