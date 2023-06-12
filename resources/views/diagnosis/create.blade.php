@@ -1,6 +1,6 @@
 @extends('layouts.diagnosis')
 @section('content')
-    <h2 class="text-center">Apakah anda merasakan {{ strtolower($item->name) }}?</h2>
+    <h2 class="text-center">{{ $item->name }}</h2>
 @endsection
 @section('actions')
 <form method="post" action="/{{ $resource }}" class="d-flex justify-content-center align-items-center">
