@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Probability;
+use App\Models\Symptom;
+use App\Models\Disease;
 
 class ProbabilitySeeder extends Seeder
 {
@@ -31,5 +33,15 @@ class ProbabilitySeeder extends Seeder
         //     'symptom_id' => $yKey+1,
         //     'amount' => $xValue
         // ]);
+
+        foreach(Symptom::all() as $symptom) {
+            foreach(Disease::all() as $disease) {
+                Probability::create([
+                    'disease_id' => $disease->id,
+                    'symptom_id' => $symptom->id,
+                    'amount' => 1
+                ]);
+            }
+        }
     }
 }

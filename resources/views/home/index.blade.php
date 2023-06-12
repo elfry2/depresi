@@ -31,7 +31,7 @@
                 <div class="container">
                     <div class="hero-inner">
 						<div class="hero-copy">
-	                        <h1 class="hero-title mt-0">{{ config('app.name') }}</h1>
+	                        <h1 class="hero-title mt-0">{{ config('app.name') }} <span class="fw-normal">({{ config('app.subname') }})</span></h1>
 	                        <p class="hero-paragraph">{{ config('app.description') }}</p>
 	                        <div class="hero-cta">
 								<a class="button button-primary" href="/diagnosis">Skrining</a>

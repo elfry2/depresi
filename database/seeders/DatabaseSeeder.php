@@ -36,7 +36,8 @@ class DatabaseSeeder extends Seeder
             ExpertSeeder::class,
             DiseaseSeeder::class,
             SymptomSeeder::class,
-            ProbabilitySeeder::class
+            ProbabilitySeeder::class,
+            RuleSeeder::class
         ] as $seeder) (new $seeder)->run();
     }
 }

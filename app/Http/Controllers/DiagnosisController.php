@@ -310,7 +310,7 @@ class DiagnosisController extends Controller
 
         $data['item'] = [
             'isFound' => 0,
-            'name' => 'Selamat! Anda tidak mengalami depresi.',
+            'name' => 'Tidak memiliki kecenderungan depresi.',
             'bayes' => 1
         ];
 

@@ -25,11 +25,17 @@
                         @include('components.diagnosis.navbar')
                     </div>
                     <div class="card bg-white shadow-sm mt-2 w-100" style="">
-                        <div class="card-body">
-                            <h1 class="text-center m-0 mt-5 @if(!$item->isFound) mb-5 @endif">{{ $item->name }}</h1>
-                            @if ($item->isFound)
-                                <p class="fw-light text-center">Probabilitas: {{ $item->bayes }}</p>
-                            @endif
+                        <div class="card-body py-5">
+                            <center>
+                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if ($item->isFound)
+                                    memiliki kecenderungan
+                                @endif</p>
+                                <h1 class="mb-0 pb-0">{{ $item->name }}</h1>
+                                @if ($item->isFound)
+                                    <p class="m-0 p-0 fw-light text-center">Probabilitas: {{ $item->bayes }}</p>
+                                    <p class="mt-3 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog)</p>
+                                @endif
+                            </center>
                             @if ($item->isFound)
                                 <div class="row mt-5">
                                     <div class="col-lg">

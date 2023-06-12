@@ -16,11 +16,11 @@ class SymptomSeeder extends Seeder
     public function run()
     {
         foreach([
-            'Mood depresif di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
-            'Perasaan bahwa dirinya tidak berarti dan bersalah di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
+            'Kesedihan yang cukup besar dalam dua minggu terakhir',
+            'Tidak bersemangat dalam dua minggu terakhir',
             'Menarik diri dari orang lain di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
-            'Mengalami kesulitan untuk tidur hampir setiap hari selama sekurang-kurangnya dua minggu terakhir',
-            'Kehilangan berat badan padahal tidak sedang menjalani program diet, dan penurunan selera makan di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
+            'Kesulitan untuk tidur hampir setiap hari selama sekurang-kurangnya dua minggu terakhir',
+            'Penurunan nafsu makan dalam dua minggu terakhir',
             'Kehilangan hasrat seksual di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
             'Kehilangan minat pada aktivitas-aktivitas yang biasa dilakukan di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',
             'Tidak mendapatkan kesenangan dari aktivitas-aktivitas yang biasa dilakukan di sebagian besar waktu selama sekurang-kurangnya dua minggu terakhir',

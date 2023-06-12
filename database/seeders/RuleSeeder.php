@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\Rule;
+use App\Models\Antecedent;
+use App\Models\ConsequentSymptom;
+use App\Models\ConsequentDisease;
 
 // [A B C D E] C 3
 // A B C
@@ -91,6 +95,16 @@ class RuleSeeder extends Seeder
      */
     public function run()
     {
-        
+        $ruleId = Rule::create()->id;
+
+        foreach([1, 2, 3, 4, 5] as $symptomId) Antecedent::create([
+            'rule_id' => $ruleId,
+            'symptom_id' => $symptomId
+        ]);
+
+        ConsequentDisease::create([
+            'rule_id' => $ruleId,
+            'disease_id' => 1
+        ]);
     }
 }

@@ -214,6 +214,8 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 
+    'subname' => 'Aplikasi Skrining Awal Depresi',
+
     'description' => 'Sistem Pakar Skrining Awal Depresi Menggunakan Metode Naive Bayes',
 
     'dev' => [
