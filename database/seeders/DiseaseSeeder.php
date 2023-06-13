@@ -61,8 +61,6 @@ class DiseaseSeeder extends Seeder
                 'name' => 'Depresi Berat',
                 'probability' => '0.33'
             ]
-        ] as $item) {
-            Disease::create($item);
-        }
+        ] as $item) Disease::create($item);
     }
 }

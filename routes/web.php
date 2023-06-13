@@ -11,6 +11,7 @@ use App\Http\Controllers\SymptomController;
 use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DiagnosisController;
+use App\Http\Controllers\AltRuleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,7 +46,12 @@ Route::middleware('auth')->group(function () {
     Route::middleware('ke')->group(function () {
         Route::resource('symptoms', SymptomController::class);
         Route::resource('diseases', DiseaseController::class);
-        Route::resource('rules', RuleController::class);
+
+        /* To use score-based rules, uncomment the following line*/
+        Route::resource('rules', AltRuleController::class);
+
+        /* To use symptoms-combination-based rules, uncomment the following line*/
+        // Route::resource('rules', RuleController::class);
     });
 
     Route::middleware('admin')->group(function () {
