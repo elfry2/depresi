@@ -83,7 +83,6 @@ class AltDiagnosisController extends Controller
 
         $symptom->score = $request->score;
 
-        if($symptom->score > 0)
         array_push($workspace->iteratedSymptoms, $symptom);
 
         session(['workspace' => (array) $workspace]);
