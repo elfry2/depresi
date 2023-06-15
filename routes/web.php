@@ -12,6 +12,7 @@ use App\Http\Controllers\PreferenceController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AltRuleController;
+use App\Http\Controllers\AltDiagnosisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,10 +30,17 @@ Route::get('/', function () {
     return view('home.index');
 });
 
-Route::get('/diagnosis', [DiagnosisController::class, 'index']);
-Route::get('/diagnosis/create', [DiagnosisController::class, 'create']);
-Route::post('/diagnosis', [DiagnosisController::class, 'store']);
-Route::get('/diagnosis/result', [DiagnosisController::class, 'show']);
+/* To use score-based diagnosis, uncomment the following four lines */
+Route::get('/diagnosis', [AltDiagnosisController::class, 'index']);
+Route::get('/diagnosis/create', [AltDiagnosisController::class, 'create']);
+Route::post('/diagnosis', [AltDiagnosisController::class, 'store']);
+Route::get('/diagnosis/result', [AltDiagnosisController::class, 'show']);
+
+/* To use rule-based diagnosis, uncomment the following four lines */
+// Route::get('/diagnosis', [DiagnosisController::class, 'index']);
+// Route::get('/diagnosis/create', [DiagnosisController::class, 'create']);
+// Route::post('/diagnosis', [DiagnosisController::class, 'store']);
+// Route::get('/diagnosis/result', [DiagnosisController::class, 'show']);
 
 Route::get('/dashboard', function () {
     return redirect('/diseases');

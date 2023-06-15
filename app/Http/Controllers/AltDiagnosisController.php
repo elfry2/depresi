@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\AltRule;
+use App\Models\Expert;
+use App\Models\Symptom;
 
 class AltDiagnosisController extends Controller
 {
@@ -52,14 +55,24 @@ class AltDiagnosisController extends Controller
 
         $currentSymptom = null;
 
+        $iteratedSymptomIds = array_map(function($item) {
+            return $item->id;
+        }, $workspace->iteratedSymptoms);
+
         foreach($symptoms as $symptom)
-        if (!in_array($symptom->id, $workspace->iteratedSymptomIds))
-        $currentSymptom = $symptom;
+        if (!in_array($symptom->id, $iteratedSymptomIds)) {
+            $currentSymptom = $symptom;
+            break;
+        }
 
         if(!isset($currentSymptom))
         return redirect('/' . self::$resource . '/result');
 
         $data['item'] = $currentSymptom;
+
+        $data['debug'] = [
+            'workspace' => $workspace
+        ];
 
         return view('alt-diagnosis.create', $data);
     }
@@ -72,20 +85,20 @@ class AltDiagnosisController extends Controller
      */
     public function store(Request $request)
     {
-        $request = $request->validate([
-            'symptomId' => 'required|integer',
+        $request->validate([
+            'id' => 'required|integer',
             'score' => 'required|integer'
         ]);
 
         $workspace = (object) session('workspace');
 
-        $symptom = Symptom::find($request->symptomId);
+        $symptom = Symptom::find($request->id);
 
         $symptom->score = $request->score;
 
         array_push($workspace->iteratedSymptoms, $symptom);
 
-        session(['workspace' => (array) $workspace]);
+        session(['workspace' => (array) $workspace]);        
 
         return redirect('/' . self::$resource . '/create');
     }
@@ -98,6 +111,12 @@ class AltDiagnosisController extends Controller
      */
     public function show()
     {
+        $data = [
+            'title' => self::$title,
+            'resource' => self::$resource,
+            'isFound' => 0
+        ];
+
         $workspace = (object) session('workspace');
 
         $score = 0;
@@ -107,20 +126,21 @@ class AltDiagnosisController extends Controller
 
         $disease = null;
 
-        foreach(Rule::all() as $rule) {
+        foreach(AltRule::all() as $rule) {
             if(
                 $score >= $rule->min
                 && ($rule->max === 0 || $score <= $rule->max)
-            ) $disease = $rule->disease;
+            ) { 
+                $disease = $rule->disease;
+                $data['isFound'] = 1;
+            }
         }
 
         /* Naive bayes goes here */
 
-        $data = [
-            'title' => self::$title,
-            'resource' => self::$resource,
-            'item' => $disease
-        ];
+        $data['item'] = $disease;
+        $data['items2'] = $workspace->iteratedSymptoms;
+        $data['items3'] = Expert::all();
 
         return view('alt-diagnosis.show', $data);
     }

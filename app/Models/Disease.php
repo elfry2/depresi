@@ -28,4 +28,8 @@ class Disease extends Model
     {
         return $this->hasMany(ConsequentSymptom::class);
     }
+
+    function altRule() : Returntype {
+        
+    }
 }
