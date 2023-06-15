@@ -17,18 +17,18 @@ class AltRuleSeeder extends Seeder
     {
         foreach([
             [
-                'min' => 0,
-                'max' => 0,
+                'min' => 3,
+                'max' => 33,
                 'disease_id' => 1
             ],
             [
-                'min' => 0,
-                'max' => 0,
+                'min' => 34,
+                'max' => 66,
                 'disease_id' => 2
             ],
             [
-                'min' => 0,
-                'max' => 0,
+                'min' => 67,
+                'max' => null,
                 'disease_id' => 3
             ],
         ] as $item) AltRule::create($item);

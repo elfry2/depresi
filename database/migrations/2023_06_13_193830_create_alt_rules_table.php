@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('alt_rules', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->float('min', 8, 5)->default(0);
-            $table->float('max', 8, 5)->default(0);
+            $table->integer('min')->nullable();
+            $table->integer('max')->nullable();
             $table->unsignedBigInteger('disease_id');
             $table->foreign('disease_id')->references('id')->on('diseases');
         });

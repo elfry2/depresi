@@ -22,7 +22,8 @@ class AltDiagnosisController extends Controller
     {
         $data = [
             'title' => self::$title,
-            'resource' => self::$resource
+            'resource' => self::$resource,
+            'item' => Symptom::count()
         ];
 
         if(
@@ -44,6 +45,9 @@ class AltDiagnosisController extends Controller
      */
     public function create()
     {
+        if(is_null(session('workspace')))
+        return redirect('/' . self::$resource);
+
         $data = [
             'title' => self::$title,
             'resource' => self::$resource
@@ -70,9 +74,9 @@ class AltDiagnosisController extends Controller
 
         $data['item'] = $currentSymptom;
 
-        $data['debug'] = [
-            'workspace' => $workspace
-        ];
+        // $data['debug'] = [
+        //     'workspace' => $workspace
+        // ];
 
         return view('alt-diagnosis.create', $data);
     }
@@ -111,10 +115,17 @@ class AltDiagnosisController extends Controller
      */
     public function show()
     {
+        if(is_null(session('workspace')))
+        return redirect('/' . self::$resource);
+
         $data = [
             'title' => self::$title,
             'resource' => self::$resource,
-            'isFound' => 0
+            'item' => (object) [
+                'isFound' => false,
+                'name' => 'Tidak memiliki kecenderungan depresi.',
+                'bayes' => 1
+            ]
         ];
 
         $workspace = (object) session('workspace');
@@ -128,19 +139,22 @@ class AltDiagnosisController extends Controller
 
         foreach(AltRule::all() as $rule) {
             if(
-                $score >= $rule->min
-                && ($rule->max === 0 || $score <= $rule->max)
+                (is_null($rule->min) || $score >= $rule->min)
+                && (is_null($rule->max) || $score <= $rule->max)
             ) { 
                 $disease = $rule->disease;
-                $data['isFound'] = 1;
+                $data['item']->isFound = true;
             }
         }
 
         /* Naive bayes goes here */
 
-        $data['item'] = $disease;
-        $data['items2'] = $workspace->iteratedSymptoms;
+        if($disease) $data['item']->name = $disease->name;
+        $data['item']->score = $score;
+        $data['items2'] = collect($workspace->iteratedSymptoms);
         $data['items3'] = Expert::all();
+
+        session(['workspace' => null]);
 
         return view('alt-diagnosis.show', $data);
     }

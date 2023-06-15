@@ -27,22 +27,30 @@
                     <div class="card bg-white shadow-sm mt-2 w-100" style="">
                         <div class="card-body py-5">
                             <center>
-                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if ($isFound)
+                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if ($item->isFound)
                                     memiliki kecenderungan
                                 @endif</p>
                                 <h1 class="mb-0 pb-0">{{ $item->name }}</h1>
-                                @if ($isFound)
-                                    <p class="m-0 p-0 fw-light text-center">Probabilitas: {{ $item->bayes }}</p>
-                                    <p class="mt-3 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog)</p>
+                                @if ($item->isFound)
+                                    <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} | Probabilitas: {{ $item->bayes }}</p>
                                 @endif
                             </center>
-                            @if ($isFound)
-                            <h5>Gejala-gejala yang ditemukan:</h5>
-                            <ul>
+                            @if (count($items2) > 0)
+                            <table class="mt-5 table">
+                                <tr>
+                                    <th style="width: 100%">Gejala</th>
+                                    <th>Skor</th>
+                                </tr>
                                 @foreach ($items2 as $item2)
-                                    @if($item2->score > 0) <li>{{ $item2->name }}</li> @endif
+                                <tr>
+                                    <td>{{ $item2->name }}</td>
+                                    <td>{{ $item2->score }}</td>
+                                </tr>
                                 @endforeach
-                            </ul>
+                            </table>
+                            @endif
+                            @if ($item->isFound)
+                            <p class="mt-5 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog).</p>
                             @endif
                         </div>
                         <div class="card-footer bg-white p-0">

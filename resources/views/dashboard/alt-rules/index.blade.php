@@ -14,14 +14,12 @@
                         <div class="mb-3">
                             <label for="minimumScoreNumberInput" class="form-label">Skor minimal</label>
                             <input name="min" id="minimumScoreNumberInput" type="number" class="form-control"
-                                min="0" max="{{ $maxScore }}" step="1" value="{{ old('min', 0) }}"
-                                required>
+                                min="0" step="1" value="{{ old('min') }}">
                         </div>
                         <div class="mb-3">
                             <label for="maximumScoreNumberInput" class="form-label">Skor maksimal</label>
                             <input name="max" id="maximumScoreNumberInput" type="number" class="form-control"
-                                min="0" max="{{ $maxScore }}" step="1" value="{{ old('max', 0) }}"
-                                required>
+                                min="0" step="1" value="{{ old('max') }}">
                         </div>
                         <div class="mb-3">
                             <label for="diseaseSelectInput" class="form-label">Gangguan</label>
@@ -178,8 +176,8 @@
                                                     <input name="min"
                                                         id="item{{ $item->id }}MinimumScoreNumberInput"
                                                         type="number" class="form-control" min="0"
-                                                        max="{{ $maxScore }}" step="1"
-                                                        value="{{ $item->min }}" required>
+                                                        step="1"
+                                                        value="{{ $item->min }}">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="item{{ $item->id }}MaximumScoreNumberInput"
@@ -187,8 +185,8 @@
                                                     <input name="max"
                                                         id="item{{ $item->id }}MaximumScoreNumberInput"
                                                         type="number" class="form-control" min="0"
-                                                        max="{{ $maxScore }}" step="1"
-                                                        value="{{ $item->max }}" required>
+                                                        step="1"
+                                                        value="{{ $item->max }}">
                                                 </div>
                                                 <div class="mb-3">
                                                     <label for="item{{ $item->id }}DiseaseSelectInput"

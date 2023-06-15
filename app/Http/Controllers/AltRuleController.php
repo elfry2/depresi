@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Models\AltRule;
 use App\Models\Disease;
@@ -33,8 +32,7 @@ class AltRuleController extends Controller
                     self::$resource . 'SortingDirection') ?: 'asc'
                 ],
             'items' => new AltRule,
-            'items2' => Disease::all(),
-            'maxScore' => DB::table('symptoms')->count() * 10
+            'items2' => Disease::all()
         ];
 
         $data['items'] = $data['items']->orderBy(
@@ -42,11 +40,12 @@ class AltRuleController extends Controller
             $data['preferences']['sortingDirection']
         );
 
-        $diseaseIds = array_map(function($item) {
-            return $item['id'];
-        }, Disease::where('name', 'like', 'q')->get()->toArray());
-
         if(request('q')) {
+            $diseaseIds = array_map(function($item) {
+                return $item['id'];
+            }, Disease::where('name', 'like', '%' . request('q') . '%')
+            ->get()->toArray());
+
             $data['items']->whereIn('disease_id', $diseaseIds);
         }
 
@@ -78,8 +77,8 @@ class AltRuleController extends Controller
         }, Disease::all()->toArray());
 
         $rules = [
-            'min' => 'decimal:0,5',
-            'max' => 'decimal:0,5',
+            'min' => 'nullable|integer',
+            'max' => 'nullable|integer',
             'disease_id' => ['integer', Rule::in($diseaseIds)]
         ];
 
@@ -124,6 +123,10 @@ class AltRuleController extends Controller
     public function update(Request $request, $id)
     {
         if($request->method === 'changeId') {
+            $request->validate([
+                'id' => 'exists:alt_rules,id'
+            ]);
+            
             $current = AltRule::find($id);
 
             $target = AltRule::find($request->id);
@@ -154,8 +157,8 @@ class AltRuleController extends Controller
         }, Disease::all()->toArray());
 
         $rules = [
-            'min' => 'decimal:0,5',
-            'max' => 'decimal:0,5',
+            'min' => 'nullable|integer',
+            'max' => 'nullable|integer',
             'disease_id' => ['integer', Rule::in($diseaseIds)]
         ];
 
