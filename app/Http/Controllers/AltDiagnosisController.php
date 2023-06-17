@@ -124,9 +124,8 @@ class AltDiagnosisController extends Controller
             'resource' => self::$resource,
             'item' => (object) [
                 'isFound' => false,
-                'name' => 'Tidak memiliki kecenderungan depresi.'
-            ],
-            'probability' => 1
+                'name' => 'tidak memiliki kecenderungan depresi'
+            ]
         ];
 
         $workspace = (object) session('workspace');
@@ -150,33 +149,35 @@ class AltDiagnosisController extends Controller
 
         /* BEGIN Naive bayes */
 
-        $evidences
-        = array_filter($workspace->iteratedSymptoms, function($item) {
-            return $item->score > 0;
-        });
-        
-
-        $hypothesis = $disease;
-
-        $hypotheses = Disease::all();
-
-        $numerator = $hypothesis->probability;
-
-        foreach($evidences as $evidence)
-        $numerator *= $evidence->probability($hypothesis);
-
-        $denominator = 0;
-
-        foreach($hypotheses as $hypothesis) {
-            $probability = $hypothesis->probability;
-
+        if($disease) {
+            $evidences
+            = array_filter($workspace->iteratedSymptoms, function($item) {
+                return $item->score > 0;
+            });
+            
+    
+            $hypothesis = $disease;
+    
+            $hypotheses = Disease::all();
+    
+            $numerator = $hypothesis->probability;
+    
             foreach($evidences as $evidence)
-            $probability *= $evidence->probability($hypothesis);
-
-            $denominator += $probability;
+            $numerator *= $evidence->probability($hypothesis);
+    
+            $denominator = 0;
+    
+            foreach($hypotheses as $hypothesis) {
+                $probability = $hypothesis->probability;
+    
+                foreach($evidences as $evidence)
+                $probability *= $evidence->probability($hypothesis);
+    
+                $denominator += $probability;
+            }
+    
+            $data['item']->probability = $numerator / $denominator;
         }
-
-        $data['item']->probability = $numerator / $denominator;
 
         /* END Naive bayes */
 
