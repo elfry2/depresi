@@ -99,7 +99,7 @@ class AltDiagnosisController extends Controller
 
         $symptom = Symptom::find($request->id);
 
-        if(!is_null($symptom)) $symptom->score = (int) $request->score;
+        $symptom->score = (int) $request->score;
 
         array_push($workspace->iteratedSymptoms, $symptom);
 
@@ -125,7 +125,8 @@ class AltDiagnosisController extends Controller
             'item' => (object) [
                 'isFound' => false,
                 'name' => 'Tidak memiliki kecenderungan depresi.'
-            ]
+            ],
+            'probability' => 1
         ];
 
         $workspace = (object) session('workspace');
@@ -149,35 +150,35 @@ class AltDiagnosisController extends Controller
 
         /* BEGIN Naive bayes */
 
-        $evidences = array_map(function($item) {
-            if($item->score > 0) return $item;
-        }, $workspace->iteratedSymptoms);
-
-        $hypothesis = $disease;
-
-        $hypotheses = Disease::all();
-
-        $numerator = $hypothesis->probability;
-
-        foreach($evidences as $evidence) {
-            if(!is_null($evidence))
+        if($disease) {
+            $evidences
+            = array_filter($workspace->iteratedSymptoms, function($item) {
+                return $item->score > 0;
+            });
+            
+    
+            $hypothesis = $disease;
+    
+            $hypotheses = Disease::all();
+    
+            $numerator = $hypothesis->probability;
+    
+            foreach($evidences as $evidence)
             $numerator *= $evidence->probability($hypothesis);
-        }
-
-        $denominator = 0;
-
-        foreach($hypotheses as $hypothesis) {
-            $probability = $hypothesis->probability;
-
-            foreach($evidences as $evidence) {
-                if(!is_null($evidence))
+    
+            $denominator = 0;
+    
+            foreach($hypotheses as $hypothesis) {
+                $probability = $hypothesis->probability;
+    
+                foreach($evidences as $evidence)
                 $probability *= $evidence->probability($hypothesis);
+    
+                $denominator += $probability;
             }
-
-            $denominator += $probability;
+    
+            $data['item']->probability = $numerator / $denominator;
         }
-
-        $data['item']->probability = $numerator / $denominator;
 
         /* END Naive bayes */
 
@@ -185,7 +186,6 @@ class AltDiagnosisController extends Controller
         $data['item']->score = $score;
         $data['items2'] = collect($workspace->iteratedSymptoms);
         $data['items3'] = Expert::all();
-
 
         session(['workspace' => null]);
 

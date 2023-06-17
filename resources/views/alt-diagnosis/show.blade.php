@@ -31,9 +31,11 @@
                                     memiliki kecenderungan
                                 @endif</p>
                                 <h1 class="mb-0 pb-0">{{ $item->name }}</h1>
+                                <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} 
                                 @if ($item->isFound)
-                                    <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} | Probabilitas: {{ $item->probability }}</p>
+                                    | Probabilitas: {{ $item->probability }}
                                 @endif
+                                </p>
                             </center>
                             @if (count($items2) > 0)
                             <table class="mt-5 table">
