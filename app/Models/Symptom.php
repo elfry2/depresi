@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Probability;
 
 class Symptom extends Model
 {
@@ -20,6 +21,14 @@ class Symptom extends Model
     public function probabilities()
     {
         return $this->hasMany(Probability::class);
+    }
+
+    function probability(Disease $disease) : float
+    {
+        return Probability::where([
+            'symptom_id' => $this->id,
+            'disease_id' => $disease->id
+        ])->first()->amount;
     }
 
     public function parent_antecedents()

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\AltRule;
 use App\Models\Expert;
 use App\Models\Symptom;
+use App\Models\Disease;
 
 class AltDiagnosisController extends Controller
 {
@@ -98,7 +99,7 @@ class AltDiagnosisController extends Controller
 
         $symptom = Symptom::find($request->id);
 
-        $symptom->score = $request->score;
+        if(!is_null($symptom)) $symptom->score = (int) $request->score;
 
         array_push($workspace->iteratedSymptoms, $symptom);
 
@@ -123,8 +124,7 @@ class AltDiagnosisController extends Controller
             'resource' => self::$resource,
             'item' => (object) [
                 'isFound' => false,
-                'name' => 'Tidak memiliki kecenderungan depresi.',
-                'bayes' => 1
+                'name' => 'Tidak memiliki kecenderungan depresi.'
             ]
         ];
 
@@ -147,12 +147,45 @@ class AltDiagnosisController extends Controller
             }
         }
 
-        /* Naive bayes goes here */
+        /* BEGIN Naive bayes */
+
+        $evidences = array_map(function($item) {
+            if($item->score > 0) return $item;
+        }, $workspace->iteratedSymptoms);
+
+        $hypothesis = $disease;
+
+        $hypotheses = Disease::all();
+
+        $numerator = $hypothesis->probability;
+
+        foreach($evidences as $evidence) {
+            if(!is_null($evidence))
+            $numerator *= $evidence->probability($hypothesis);
+        }
+
+        $denominator = 0;
+
+        foreach($hypotheses as $hypothesis) {
+            $probability = $hypothesis->probability;
+
+            foreach($evidences as $evidence) {
+                if(!is_null($evidence))
+                $probability *= $evidence->probability($hypothesis);
+            }
+
+            $denominator += $probability;
+        }
+
+        $data['item']->probability = $numerator / $denominator;
+
+        /* END Naive bayes */
 
         if($disease) $data['item']->name = $disease->name;
         $data['item']->score = $score;
         $data['items2'] = collect($workspace->iteratedSymptoms);
         $data['items3'] = Expert::all();
+
 
         session(['workspace' => null]);
 
