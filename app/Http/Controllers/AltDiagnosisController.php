@@ -150,35 +150,33 @@ class AltDiagnosisController extends Controller
 
         /* BEGIN Naive bayes */
 
-        if($disease) {
-            $evidences
-            = array_filter($workspace->iteratedSymptoms, function($item) {
-                return $item->score > 0;
-            });
-            
-    
-            $hypothesis = $disease;
-    
-            $hypotheses = Disease::all();
-    
-            $numerator = $hypothesis->probability;
-    
+        $evidences
+        = array_filter($workspace->iteratedSymptoms, function($item) {
+            return $item->score > 0;
+        });
+        
+
+        $hypothesis = $disease;
+
+        $hypotheses = Disease::all();
+
+        $numerator = $hypothesis->probability;
+
+        foreach($evidences as $evidence)
+        $numerator *= $evidence->probability($hypothesis);
+
+        $denominator = 0;
+
+        foreach($hypotheses as $hypothesis) {
+            $probability = $hypothesis->probability;
+
             foreach($evidences as $evidence)
-            $numerator *= $evidence->probability($hypothesis);
-    
-            $denominator = 0;
-    
-            foreach($hypotheses as $hypothesis) {
-                $probability = $hypothesis->probability;
-    
-                foreach($evidences as $evidence)
-                $probability *= $evidence->probability($hypothesis);
-    
-                $denominator += $probability;
-            }
-    
-            $data['item']->probability = $numerator / $denominator;
+            $probability *= $evidence->probability($hypothesis);
+
+            $denominator += $probability;
         }
+
+        $data['item']->probability = $numerator / $denominator;
 
         /* END Naive bayes */
 

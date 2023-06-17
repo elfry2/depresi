@@ -51,15 +51,15 @@ class DiseaseSeeder extends Seeder
             // ],
             [
                 'name' => 'Depresi Ringan',
-                'probability' => '0.33'
+                'probability' => '0.4'
             ],
             [
                 'name' => 'Depresi Sedang',
-                'probability' => '0.33'
+                'probability' => '0.3'
             ],
             [
                 'name' => 'Depresi Berat',
-                'probability' => '0.33'
+                'probability' => '0.2'
             ]
         ] as $item) Disease::create($item);
     }
