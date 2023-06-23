@@ -39,7 +39,7 @@ class ProbabilitySeeder extends Seeder
                 Probability::create([
                     'disease_id' => $disease->id,
                     'symptom_id' => $symptom->id,
-                    'amount' => 1
+                    'amount' => 0.33
                 ]);
             }
         }
