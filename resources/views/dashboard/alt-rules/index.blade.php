@@ -104,7 +104,7 @@
                             <td>{{ $item->id }}</td>
                             <td>{{ $item->min }}</td>
                             <td>{{ $item->max }}</td>
-                            <td>{{ $item->disease->name }}</td>
+                            <td class="{{ $item->disease->is_healthy ? 'text-success' : '' }}">{{ $item->disease->name }}</td>
                             <td align="right">
                                 <div class="dropstart">
                                     <button type="button" class="btn btn-outline-dark border-0" data-bs-toggle="dropdown">

@@ -27,15 +27,11 @@
                     <div class="card bg-white shadow-sm mt-2 w-100" style="">
                         <div class="card-body py-5">
                             <center>
-                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if ($item->isFound)
+                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if (!$item->is_healthy)
                                     memiliki kecenderungan
                                 @endif</p>
                                 <h1 class="mb-0 pb-0">{{ $item->name }}</h1>
-                                <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} 
-                                @if ($item->isFound)
-                                    | Probabilitas: {{ $item->probability }}
-                                @endif
-                                </p>
+                                <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} | Probabilitas: {{ $item->bayes }}</p>
                             </center>
                             @if (count($items2) > 0)
                             <table class="mt-5 table">
@@ -51,7 +47,7 @@
                                 @endforeach
                             </table>
                             @endif
-                            @if ($item->isFound)
+                            @if (!$item->is_healthy)
                             <p class="mt-5 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog).</p>
                             @endif
                         </div>

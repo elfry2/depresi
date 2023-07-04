@@ -122,10 +122,7 @@ class AltDiagnosisController extends Controller
         $data = [
             'title' => self::$title,
             'resource' => self::$resource,
-            'item' => (object) [
-                'isFound' => false,
-                'name' => 'tidak memiliki kecenderungan depresi'
-            ]
+            'item' => Disease::where('is_healthy', true)->first()
         ];
 
         $workspace = (object) session('workspace');
@@ -135,53 +132,67 @@ class AltDiagnosisController extends Controller
         foreach($workspace->iteratedSymptoms as $symptom)
         $score += $symptom->score;
 
-        $disease = null;
-
         foreach(AltRule::all() as $rule) {
             if(
                 (is_null($rule->min) || $score >= $rule->min)
                 && (is_null($rule->max) || $score <= $rule->max)
             ) { 
-                $disease = $rule->disease;
-                $data['item']->isFound = true;
+                $data['item'] = $rule->disease;
             }
         }
 
         /* BEGIN Naive bayes */
 
-        if($disease) {
-            $evidences
-            = array_filter($workspace->iteratedSymptoms, function($item) {
-                return $item->score > 0;
-            });
+        $evidences
+        = array_filter($workspace->iteratedSymptoms, function($item) {
+            return $item->score > 0;
+        });
+        
+
+        $hypothesis = $data['item'];
+
+        $hypotheses = Disease::all();
+
+        $numerator = $hypothesis->probability;
+        
+        $sampleCount = 10 ** 5; // To cover our float precision
+
+        foreach($evidences as $evidence)
+        {
+            $smoothie = $evidence->probability_given($hypothesis)
+            * $sampleCount;
             
-    
-            $hypothesis = $disease;
-    
-            $hypotheses = Disease::all();
-    
-            $numerator = $hypothesis->probability;
-    
-            foreach($evidences as $evidence)
-            $numerator *= $evidence->probability($hypothesis);
-    
-            $denominator = 0;
-    
-            foreach($hypotheses as $hypothesis) {
-                $probability = $hypothesis->probability;
-    
-                foreach($evidences as $evidence)
-                $probability *= $evidence->probability($hypothesis);
-    
-                $denominator += $probability;
-            }
-    
-            $data['item']->probability = $numerator / $denominator;
+            $smoothie++;
+
+            $smoothie /= ($sampleCount + count($evidences));
+
+            $numerator *= $smoothie;
         }
+
+        $denominator = 0;
+
+        foreach($hypotheses as $hypothesis) {
+            $probability = $hypothesis->probability;
+
+            foreach($evidences as $evidence)
+            {
+                $smoothie = $evidence->probability_given($hypothesis)
+                * $sampleCount;
+                
+                $smoothie++;
+    
+                $smoothie /= ($sampleCount + count($evidences));
+    
+                $probability *= $smoothie;
+            }
+
+            $denominator += $probability;
+        }
+
+        $data['item']->bayes = $numerator / $denominator;
 
         /* END Naive bayes */
 
-        if($disease) $data['item']->name = $disease->name;
         $data['item']->score = $score;
         $data['items2'] = collect($workspace->iteratedSymptoms);
         $data['items3'] = Expert::all();

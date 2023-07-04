@@ -16,7 +16,6 @@ class DiseaseSeeder extends Seeder
     public function run()
     {
         foreach([
-            /* Look how they massacred my boy. */
             // [
             //     'name' => 'Gangguan Depresif Mayor',
             //     'probability' => 0.6
@@ -50,16 +49,21 @@ class DiseaseSeeder extends Seeder
             //     'probability' => 0.1
             // ],
             [
+                'name' => 'Tidak memiliki kecenderungan depresi',
+                'probability' => '0.6',
+                'is_healthy' => true
+            ],
+            [
                 'name' => 'Depresi Ringan',
-                'probability' => '0.33'
+                'probability' => '0.2'
             ],
             [
                 'name' => 'Depresi Sedang',
-                'probability' => '0.33'
+                'probability' => '0.1'
             ],
             [
                 'name' => 'Depresi Berat',
-                'probability' => '0.33'
+                'probability' => '0.1'
             ]
         ] as $item) Disease::create($item);
     }

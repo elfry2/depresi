@@ -11,7 +11,8 @@ class Disease extends Model
 
     protected $fillable = [
         'name',
-        'probability'
+        'probability',
+        'is_healthy'
     ];
 
     public function probabilities()

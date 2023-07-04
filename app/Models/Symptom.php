@@ -23,7 +23,7 @@ class Symptom extends Model
         return $this->hasMany(Probability::class);
     }
 
-    function probability(Disease $disease) : float
+    function probability_given(Disease $disease) : float
     {
         return Probability::where([
             'symptom_id' => $this->id,

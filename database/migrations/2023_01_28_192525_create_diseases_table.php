@@ -18,6 +18,7 @@ return new class extends Migration
             $table->timestamps();
             $table->string('name')->unique();
             $table->float('probability', 8, 5)->default(0);
+            $table->boolean('is_healthy')->default(false);
         });
     }
 

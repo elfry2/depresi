@@ -87,10 +87,13 @@ class DiseaseController extends Controller
     {
         $rules = [
             'name' => 'required|max:255|unique:diseases',
-            'probability' => 'required|decimal:0,5'
+            'probability' => 'required|decimal:0,5',
+            'is_healthy' => 'boolean'
         ];
 
-        Disease::create($request->validate($rules));
+        $request = $request->validate($rules);
+
+        Disease::create($request);
 
         return redirect('/diseases')
         ->with('message', (object) [
@@ -132,7 +135,8 @@ class DiseaseController extends Controller
     {
         $rules = [
             'name' => 'required|max:255',
-            'probability' => 'required|decimal:0,5'
+            'probability' => 'required|decimal:0,5',
+            'is_healthy' => 'boolean'
         ];
 
         $request->validate($rules);
@@ -143,7 +147,8 @@ class DiseaseController extends Controller
 
         $disease->update([
             'name' => $request->name,
-            'probability' => $request->probability
+            'probability' => $request->probability,
+            'is_healthy' => $request->is_healthy == true
         ]);
 
         return redirect('/diseases')
