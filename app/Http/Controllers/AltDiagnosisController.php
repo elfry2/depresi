@@ -154,8 +154,10 @@ class AltDiagnosisController extends Controller
         $hypotheses = Disease::all();
 
         $numerator = $hypothesis->probability;
+
+        $floatPrecision = 5;
         
-        $sampleCount = 10 ** 5; // To cover our float precision
+        $sampleCount = 10 ** $floatPrecision;
 
         foreach($evidences as $evidence)
         {
