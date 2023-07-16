@@ -34,14 +34,16 @@
                                 <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} | Probabilitas: {{ $item->bayes }}</p>
                             </center>
                             @if (count($items2) > 0)
-                            <table class="mt-5 table">
+                            <table class="mt-5 table table-responsive">
                                 <tr>
-                                    <th style="width: 100%">Gejala</th>
+                                    <th>Gejala</th>
+                                    <th>Frekuensi</th>
                                     <th>Skor</th>
                                 </tr>
                                 @foreach ($items2 as $item2)
                                 <tr>
                                     <td>{{ $item2->name }}</td>
+                                    <td>{{ $item2->frequency }}</td>
                                     <td>{{ $item2->score }}</td>
                                 </tr>
                                 @endforeach

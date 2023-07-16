@@ -13,6 +13,8 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AltRuleController;
 use App\Http\Controllers\AltDiagnosisController;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Test;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,6 +26,12 @@ use App\Http\Controllers\AltDiagnosisController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('mail-test', function () {
+    Mail::to('elfry.2nd@gmail.com')->send(new Test());
+
+    echo 'Ok';
+});
 
 Route::get('/', function () {
     // return view('welcome');

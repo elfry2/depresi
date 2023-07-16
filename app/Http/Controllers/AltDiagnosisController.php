@@ -129,8 +129,30 @@ class AltDiagnosisController extends Controller
 
         $score = 0;
 
-        foreach($workspace->iteratedSymptoms as $symptom)
-        $score += $symptom->score;
+        foreach($workspace->iteratedSymptoms as &$symptom) {
+            $score += $symptom->score;
+            $frequency = '';
+
+            switch($symptom->score) {
+                case 0:
+                    $frequency = 'Tidak pernah';
+                    break;
+
+                case 1:
+                    $frequency = 'Jarang';
+                    break;
+
+                case 2:
+                    $frequency = 'Sering';
+                    break;
+
+                case 3:
+                    $frequency = 'Hampir setiap hari';
+                    break;
+            }
+
+            $symptom->frequency = $frequency;
+        }
 
         foreach(AltRule::all() as $rule) {
             if(
