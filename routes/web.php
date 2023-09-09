@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\AltRuleController;
 use App\Http\Controllers\AltDiagnosisController;
+use App\Http\Controllers\BayesDemoController;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Test;
 
@@ -78,5 +79,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/preferences/{name}/{value}', [PreferenceController::class, 'set']);
     Route::get('/preferences/{name}', [PreferenceController::class, 'get']);
 });
+
+Route::get('/bayes-demo', [BayesDemoController::class, 'index'])->name('bayes-demo.index');
+Route::post('/bayes-demo/result', [BayesDemoController::class, 'result'])->name('bayes-demo.result');;
 
 require __DIR__.'/auth.php';
