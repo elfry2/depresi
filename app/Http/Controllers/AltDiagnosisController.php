@@ -173,47 +173,52 @@ class AltDiagnosisController extends Controller
 
         $hypothesis = $data['item'];
 
-        $hypotheses = Disease::all();
+        $data['item']-> bayes = BayesController::getProbability(
+            $hypothesis,
+            $evidences
+        );
 
-        $numerator = $hypothesis->probability;
+        // $hypotheses = Disease::all();
 
-        $floatPrecision = 5;
+        // $numerator = $hypothesis->probability;
+
+        // $floatPrecision = 5;
         
-        $sampleCount = 10 ** $floatPrecision;
+        // $sampleCount = 10 ** $floatPrecision;
 
-        foreach($evidences as $evidence)
-        {
-            $smoothie = $evidence->probability_given($hypothesis)
-            * $sampleCount;
+        // foreach($evidences as $evidence)
+        // {
+        //     $smoothie = $evidence->probability_given($hypothesis)
+        //     * $sampleCount;
             
-            $smoothie++;
+        //     $smoothie++;
 
-            $smoothie /= ($sampleCount + count($evidences));
+        //     $smoothie /= ($sampleCount + count($evidences));
 
-            $numerator *= $smoothie;
-        }
+        //     $numerator *= $smoothie;
+        // }
 
-        $denominator = 0;
+        // $denominator = 0;
 
-        foreach($hypotheses as $hypothesis) {
-            $probability = $hypothesis->probability;
+        // foreach($hypotheses as $hypothesis) {
+        //     $probability = $hypothesis->probability;
 
-            foreach($evidences as $evidence)
-            {
-                $smoothie = $evidence->probability_given($hypothesis)
-                * $sampleCount;
+        //     foreach($evidences as $evidence)
+        //     {
+        //         $smoothie = $evidence->probability_given($hypothesis)
+        //         * $sampleCount;
                 
-                $smoothie++;
+        //         $smoothie++;
     
-                $smoothie /= ($sampleCount + count($evidences));
+        //         $smoothie /= ($sampleCount + count($evidences));
     
-                $probability *= $smoothie;
-            }
+        //         $probability *= $smoothie;
+        //     }
 
-            $denominator += $probability;
-        }
+        //     $denominator += $probability;
+        // }
 
-        $data['item']->bayes = $numerator / $denominator;
+        // $data['item']->bayes = $numerator / $denominator;
 
         /* END Naive bayes */
 

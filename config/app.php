@@ -225,5 +225,7 @@ return [
         'site' => 'https://elfryno.blogspot.com'
     ],
 
-    'itemsPerPage' => 20
+    'itemsPerPage' => 20,
+
+    'laplaceSampleCount' => 10000,
 ];
