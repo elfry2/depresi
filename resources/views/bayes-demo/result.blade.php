@@ -1,6 +1,7 @@
 @extends('layouts.bayes-demo')
 @section('content')
-    <h5>Evidences</h5>
+    <a class="btn btn-outline-success border-0" href="{{ route('bayes-demo.index') }}"><i class="bi-chevron-left"></i> Back</a>
+    <h5 class="mt-5">Evidences</h5>
     <ul>
         @foreach ($evidences as $evidence)
             <li>{{ $evidence->name }}</li>
@@ -10,7 +11,4 @@
     <span>{{ $hypothesis->name }}</span>
     <h5 class="mt-5">Probability</h5>
     <span>{{ $probability }}</span>
-@endsection
-@section('actions')
-    <a class="btn" href="{{ route('bayes-demo.index') }}"><i class="bi-chevron-left"></i> Back</a>
 @endsection
