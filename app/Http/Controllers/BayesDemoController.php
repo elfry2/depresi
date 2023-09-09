@@ -23,8 +23,8 @@ class BayesDemoController extends Controller
         $hypothesis = Disease::find($request->hypothesisId);
         
         $bayes = BayesController::getProbability(
-            $evidences,
-            $hypothesis
+            $hypothesis,
+            $evidences
         );
 
         $data = [

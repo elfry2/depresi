@@ -7,8 +7,8 @@ use Illuminate\Http\Request;
 class BayesController extends Controller
 {
     public static function getProbability(
+        $hypothesis,
         $evidences,
-        $hypothesis
     ) {
         /* BEGIN Naive bayes */
 
