@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Rule;
-use App\Models\Antecedent;
+use App\Models\AntecedentSymptom;
 use App\Models\ConsequentSymptom;
 use App\Models\ConsequentDisease;
 
@@ -97,7 +97,7 @@ class RuleSeeder extends Seeder
     {
         $ruleId = Rule::create()->id;
 
-        foreach([1, 2, 3, 4, 5] as $symptomId) Antecedent::create([
+        foreach([1, 2, 3, 4, 5] as $symptomId) AntecedentSymptom::create([
             'rule_id' => $ruleId,
             'symptom_id' => $symptomId
         ]);

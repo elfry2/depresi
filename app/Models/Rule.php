@@ -16,9 +16,9 @@ class Rule extends Model
         'consequent_disease'
     ];
 
-    public function antecedents()
+    public function antecedent_symptoms()
     {
-        return $this->hasMany(Antecedent::class);
+        return $this->hasMany(AntecedentSymptom::class);
     }
 
     public function consequent_symptoms()

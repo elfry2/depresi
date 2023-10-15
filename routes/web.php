@@ -40,16 +40,16 @@ Route::get('/', function () {
 });
 
 /* To use score-based diagnosis, uncomment the following four lines */
-Route::get('/diagnosis', [AltDiagnosisController::class, 'index']);
-Route::get('/diagnosis/create', [AltDiagnosisController::class, 'create']);
-Route::post('/diagnosis', [AltDiagnosisController::class, 'store']);
-Route::get('/diagnosis/result', [AltDiagnosisController::class, 'show']);
+// Route::get('/diagnosis', [AltDiagnosisController::class, 'index']);
+// Route::get('/diagnosis/create', [AltDiagnosisController::class, 'create']);
+// Route::post('/diagnosis', [AltDiagnosisController::class, 'store']);
+// Route::get('/diagnosis/result', [AltDiagnosisController::class, 'show']);
 
 /* To use rule-based diagnosis, uncomment the following four lines */
-// Route::get('/diagnosis', [DiagnosisController::class, 'index']);
-// Route::get('/diagnosis/create', [DiagnosisController::class, 'create']);
-// Route::post('/diagnosis', [DiagnosisController::class, 'store']);
-// Route::get('/diagnosis/result', [DiagnosisController::class, 'show']);
+Route::get('/diagnosis', [DiagnosisController::class, 'index']);
+Route::get('/diagnosis/create', [DiagnosisController::class, 'create']);
+Route::post('/diagnosis', [DiagnosisController::class, 'store']);
+Route::get('/diagnosis/result', [DiagnosisController::class, 'show']);
 
 Route::get('/dashboard', function () {
     return redirect('/diseases');
@@ -65,10 +65,10 @@ Route::middleware('auth')->group(function () {
         Route::resource('diseases', DiseaseController::class);
 
         /* To use score-based rules, uncomment the following line*/
-        Route::resource('rules', AltRuleController::class);
+        // Route::resource('rules', AltRuleController::class);
 
-        /* To use symptoms-combination-based rules, uncomment the following line*/
-        // Route::resource('rules', RuleController::class);
+        /* To use symptoms-presence-based rules, uncomment the following line*/
+        Route::resource('rules', RuleController::class);
     });
 
     Route::middleware('admin')->group(function () {

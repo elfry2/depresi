@@ -21,7 +21,7 @@
                     <tr>
                         <th>#</th>
                         <th>Id.</th>
-                        <th>Gejala yang dibutuhkan</th>
+                        <th>Kondisi yang dibutuhkan</th>
                         <th>Gejala yang dibangkitkan</th>
                         <th>Gangguan yang dibangkitkan</th>
                         <th></th>

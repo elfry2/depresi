@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('antecedents', function (Blueprint $table) {
+        Schema::create('antecedent_symptom_scores', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->unsignedBigInteger('rule_id');
-            $table->foreign('rule_id')->references('id')->on('rules');
-            $table->unsignedBigInteger('symptom_id');
-            $table->foreign('symptom_id')->references('id')->on('symptoms');
         });
     }
 
@@ -30,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('antecendents');
+        Schema::dropIfExists('antecedent_symptom_scores');
     }
 };

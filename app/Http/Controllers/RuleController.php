@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Rule;
 use App\Models\Disease;
 use App\Models\Symptom;
-use App\Models\Antecedent;
+use App\Models\AntecedentSymptom;
 use App\Models\ConsequentDisease;
 use App\Models\ConsequentSymptom;
 use App\Http\Requests\StoreRuleRequest;
 use App\Http\Requests\UpdateRuleRequest;
+use App\Models\AntecedentSymptomCount;
+use App\Models\AntecedentSymptomScore;
 
 class RuleController extends Controller
 {
@@ -45,7 +47,7 @@ class RuleController extends Controller
             }, Symptom::select('id')
             ->where('name', 'like', "%$q%")->get()->toArray());
             
-            $ruleIdsFromAntecedents = Antecedent::select('rule_id')
+            $ruleIdsFromAntecedentSymptoms = AntecedentSymptom::select('rule_id')
             ->distinct()->whereIn('symptom_id', $symptomIds)->get();
     
             $ruleIdsFromConsequentSymptoms
@@ -62,7 +64,7 @@ class RuleController extends Controller
             ->distinct()->whereIn('disease_id', $diseaseIds)->get();
     
             $data['items']
-            = $data['items']->whereIn('id', $ruleIdsFromAntecedents)
+            = $data['items']->whereIn('id', $ruleIdsFromAntecedentSymptoms)
             ->orWhereIn('id', $ruleIdsFromConsequentSymptoms)
             ->orWhereIn('id', $ruleIdsFromConsequentDiseases);
         }
@@ -72,14 +74,14 @@ class RuleController extends Controller
         $data['items'] = $data['items']->paginate(config('app.itemsPerPage'));
 
         for($i = 0; $i < count($data['items']); $i++) {
-            $antecedentNames = [];
+            $antecedentSymptomNames = [];
 
-            foreach($data['items'][$i]->antecedents as $antecedent) {
-                array_push($antecedentNames, $antecedent->symptom->name);
+            foreach($data['items'][$i]->antecedent_symptoms as $antecedent_symptom) {
+                array_push($antecedentSymptomNames, $antecedent_symptom->symptom->name);
             }
 
-            $data['items'][$i]->antecedents 
-            = ucfirst(strtolower(implode('; ', $antecedentNames)));
+            $data['items'][$i]->antecedent_symptoms 
+            = ucfirst(strtolower(implode('; ', $antecedentSymptomNames)));
         }
 
         for($i = 0; $i < count($data['items']); $i++) {
@@ -127,18 +129,34 @@ class RuleController extends Controller
     public function store(StoreRuleRequest $request)
     {
         $request->validate([
-            'antecedent_ids' => 'required'
+            'antecedent_symptom_ids' => 'required'
         ]);
         
         $rule = Rule::create();
 
-        foreach($request->antecedent_ids as $antecedent_id) {
-            Antecedent::create([
+        foreach($request->antecedent_symptom_ids as $antecedent_symptom_id) {
+            AntecedentSymptom::create([
                 'rule_id' => $rule->id,
-                'symptom_id' => $antecedent_id
+                'symptom_id' => $antecedent_symptom_id
             ]);
         }
 
+        if($request->use_antecedent_symptom_presence_count) {
+            AntecedentSymptomCount::create([
+                'rule_id' => $rule->id,
+                'from' => $request->use_antecedent_symptom_presence_count_from ?: null,
+                'to' => $request->use_antecedent_symptom_presence_count_to ?: null,
+            ]);
+        }
+
+        if($request->use_antecedent_symptom_presence_frequency_score) {
+            AntecedentSymptomScore::create([
+                'rule_id' => $rule->id,
+                'from' => $request->antecedent_symptom_presence_frequency_score_from ?: null,
+                'to' => $request->antecedent_symptom_presence_frequency_score_to ?: null,
+            ]);
+        }
+        
         if(isset($request->consequent_symptom_ids)) {
             foreach($request->consequent_symptom_ids as $consequent_symptom_id) {
                 ConsequentSymptom::create([
@@ -191,18 +209,18 @@ class RuleController extends Controller
             'theItem' => $rule
         ];
 
-        $antecedents = Antecedent::where('rule_id', $rule->id)->get();
+        $antecedent_symptoms = AntecedentSymptom::where('rule_id', $rule->id)->get();
 
-        $antecedentIds = [];
+        $antecedentSymptomIds = [];
         
-        foreach($antecedents as $antecedent) {
+        foreach($antecedent_symptoms as $antecedent_symptom) {
             array_push(
-                $antecedentIds,
-                $antecedent->symptom_id
+                $antecedentSymptomIds,
+                $antecedent_symptom->symptom_id
             );
         }
 
-        $data['theItem']['antecedent_ids'] = $antecedentIds;
+        $data['theItem']['antecedent_symptom_ids'] = $antecedentSymptomIds;
 
         $consequentSymptoms
         = ConsequentSymptom::where('rule_id', $rule->id)->get();
@@ -243,7 +261,7 @@ class RuleController extends Controller
                 'id' => 'required|integer|exists:rules'
             ])['id'];
 
-            $antecedents = Antecedent::where('rule_id', $newId)->get();
+            $antecedent_symptoms = AntecedentSymptom::where('rule_id', $newId)->get();
             
             $consequentSymptoms
             = ConsequentSymptom::where('rule_id', $newId)->get();
@@ -251,13 +269,13 @@ class RuleController extends Controller
             $consequentDisease
             = ConsequentDisease::where('rule_id', $newId)->first();
 
-            Antecedent::where('rule_id', $newId)->delete();
+            AntecedentSymptom::where('rule_id', $newId)->delete();
 
             ConsequentSymptom::where('rule_id', $newId)->delete();
 
             ConsequentDisease::where('rule_id', $newId)->delete();
 
-            Antecedent::where('rule_id', $rule->id)->update([
+            AntecedentSymptom::where('rule_id', $rule->id)->update([
                 'rule_id' => (int) $newId
             ]);
 
@@ -269,10 +287,10 @@ class RuleController extends Controller
                 'rule_id' => (int) $newId
             ]);
 
-            foreach($antecedents as $antecedent) {
-                Antecedent::create([
+            foreach($antecedent_symptoms as $antecedent_symptoms) {
+                AntecedentSymptom::create([
                     'rule_id' => $rule->id,
-                    'symptom_id' => $antecedent->symptom_id
+                    'symptom_id' => $antecedent_symptoms->symptom_id
                 ]);
             }
 
@@ -298,19 +316,19 @@ class RuleController extends Controller
         }
 
         $request->validate([
-            'antecedent_ids' => 'required'
+            'antecedent_symptom_ids' => 'required'
         ]);
 
-        Antecedent::where('rule_id', $rule->id)->delete();
+        AntecedentSymptom::where('rule_id', $rule->id)->delete();
 
         ConsequentSymptom::where('rule_id', $rule->id)->delete();
 
         ConsequentDisease::where('rule_id', $rule->id)->delete();
 
-        foreach($request->antecedent_ids as $antecedent_id) {
-            Antecedent::create([
+        foreach($request->antecedent_symptom_ids as $antecedent_symptom_id) {
+            AntecedentSymptom::create([
                 'rule_id' => $rule->id,
-                'symptom_id' => $antecedent_id
+                'symptom_id' => $antecedent_symptom_id
             ]);
         }
 
@@ -345,7 +363,7 @@ class RuleController extends Controller
      */
     public function destroy(Rule $rule)
     {
-        Antecedent::where('rule_id', $rule->id)->delete();
+        AntecedentSymptom::where('rule_id', $rule->id)->delete();
 
         ConsequentSymptom::where('rule_id', $rule->id)->delete();
 

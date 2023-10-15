@@ -10,7 +10,7 @@
                 @csrf
                 <div class="row">
                     <div class="col">
-                        <h5>Gejala yang dibutuhkan</h5>
+                        <h5>Kondisi yang dibutuhkan</h5>
                         @if ($items->count() <= 0)
                             <p class="text-muted">Belum ada gejala. Klik pada menu Gejala untuk menambahkan.</p>
                         @else
@@ -18,15 +18,59 @@
                                 <tbody>
                                     @foreach ($items as $item)
                                         <tr>
-                                            <td><input name="antecedent_ids[]" value="{{ $item->id }}"
+                                            <td><input name="antecedent_symptom_ids[]" value="{{ $item->id }}"
                                                     id="inputSymptom{{ $item->id }}CheckboxInput" type="checkbox"
-                                                    class="form-check-input" @if (!is_null(old('antecedent_ids')) && in_array($item->id, old('antecedent_ids'))) checked @endif></td>
+                                                    class="form-check-input" @if (!is_null(old('antecedent_symptom_ids')) && in_array($item->id, old('antecedent_symptom_ids'))) checked @endif></td>
                                             <td><label for="inputSymptom{{ $item->id }}CheckboxInput"
                                                     class="form-check-label">{{ $item->name }}</label></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <label for="useSymptomPresenceCountCheckboxInput" class="form-check-label">Jumlah gejala yang muncul</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomPresenceCountCheckboxInput" name="use_symptom_presence_count" value="1">
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomPresenceCountFromNumberInput" type="number" class="form-control" placeholder="">
+                                                <label for="symptomPresenceCountFromNumberInput" class="form-label">Dari</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomPresenceCountToNumberInput" type="number" class="form-control" placeholder="">
+                                                <label for="symptomPresenceCountToNumberInput" class="form-label">Hingga</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <label for="useSymptomPresenceFrequencyScoreCheckboxInput" class="form-check-label">Skor frekuensi kemunculan gejala</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomPresenceFrequencyScoreCheckboxInput" name="use_symptom_presence_frequency_score" value="1">
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomPresenceFrequencyScoreFromNumberInput" type="number" class="form-control" placeholder="">
+                                                <label for="symptomPresenceFrequencyScoreFromNumberInput" class="form-label">Dari</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomPresenceFrequencyScoreToNumberInput" type="number" class="form-control" placeholder="">
+                                                <label for="symptomPresenceFrequencyScoreToNumberInput" class="form-label">Hingga</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                     <div class="col">
