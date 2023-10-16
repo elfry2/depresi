@@ -13,12 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('antecedent_symptom_counts', function (Blueprint $table) {
+        Schema::create('frequencies', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->foreignId('rule_id')->constrained()->unique();
-            $table->integer('from')->nullable();
-            $table->integer('to')->nullable();
+            $table->string('name');
+            $table->float('value');
         });
     }
 
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('antecedent_symptom_counts');
+        Schema::dropIfExists('frequencies');
     }
 };

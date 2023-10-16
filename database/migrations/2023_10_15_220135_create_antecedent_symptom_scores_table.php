@@ -16,6 +16,9 @@ return new class extends Migration
         Schema::create('antecedent_symptom_scores', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
+            $table->foreignId('rule_id')->constrained()->unique();
+            $table->float('from')->nullable();
+            $table->float('to')->nullable();
         });
     }
 

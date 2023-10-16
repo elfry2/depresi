@@ -8,4 +8,10 @@ use Illuminate\Database\Eloquent\Model;
 class AntecedentSymptomScore extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'rule_id',
+        'from',
+        'to',
+    ];
 }

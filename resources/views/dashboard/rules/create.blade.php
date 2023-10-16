@@ -30,20 +30,20 @@
                             <div class="card mt-2">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <label for="useSymptomPresenceCountCheckboxInput" class="form-check-label">Jumlah gejala yang muncul</label>
-                                        <input type="checkbox" class="form-check-input" id="useSymptomPresenceCountCheckboxInput" name="use_symptom_presence_count" value="1">
+                                        <label for="useSymptomCountCheckboxInput" class="form-check-label">Jumlah gejala yang muncul</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomCountCheckboxInput" name="use_antecedent_symptom_count" value="1">
                                     </div>
                                     <div class="row mt-2">
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomPresenceCountFromNumberInput" type="number" class="form-control" placeholder="">
-                                                <label for="symptomPresenceCountFromNumberInput" class="form-label">Dari</label>
+                                                <input id="symptomCountFromNumberInput" name="antecedent_symptom_count_from" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() }}">
+                                                <label for="symptomCountFromNumberInput" class="form-label">Dari</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomPresenceCountToNumberInput" type="number" class="form-control" placeholder="">
-                                                <label for="symptomPresenceCountToNumberInput" class="form-label">Hingga</label>
+                                                <input id="symptomCountToNumberInput" name="antecedent_symptom_count_to" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() }}">
+                                                <label for="symptomCountToNumberInput" class="form-label">Hingga</label>
                                             </div>
                                         </div>
                                     </div>
@@ -52,20 +52,20 @@
                             <div class="card mt-2">
                                 <div class="card-body">
                                     <div class="form-check">
-                                        <label for="useSymptomPresenceFrequencyScoreCheckboxInput" class="form-check-label">Skor frekuensi kemunculan gejala</label>
-                                        <input type="checkbox" class="form-check-input" id="useSymptomPresenceFrequencyScoreCheckboxInput" name="use_symptom_presence_frequency_score" value="1">
+                                        <label for="useSymptomScoreCheckboxInput" class="form-check-label">Skor frekuensi kemunculan gejala</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomScoreCheckboxInput" name="use_antecedent_symptom_score" value="1">
                                     </div>
                                     <div class="row mt-2">
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomPresenceFrequencyScoreFromNumberInput" type="number" class="form-control" placeholder="">
-                                                <label for="symptomPresenceFrequencyScoreFromNumberInput" class="form-label">Dari</label>
+                                                <input id="symptomScoreFromNumberInput" name="antecedent_symptom_score_from" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() * $item3 }}">
+                                                <label for="symptomScoreFromNumberInput" class="form-label">Dari</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomPresenceFrequencyScoreToNumberInput" type="number" class="form-control" placeholder="">
-                                                <label for="symptomPresenceFrequencyScoreToNumberInput" class="form-label">Hingga</label>
+                                                <input id="symptomScoreToNumberInput" name="antecedent_symptom_score_to" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() * $item3 }}">
+                                                <label for="symptomScoreToNumberInput" class="form-label">Hingga</label>
                                             </div>
                                         </div>
                                     </div>

@@ -12,6 +12,7 @@ use App\Http\Requests\StoreRuleRequest;
 use App\Http\Requests\UpdateRuleRequest;
 use App\Models\AntecedentSymptomCount;
 use App\Models\AntecedentSymptomScore;
+use App\Models\Frequency;
 
 class RuleController extends Controller
 {
@@ -114,7 +115,8 @@ class RuleController extends Controller
             'noPagination' => true,
             'backURL' => '/rules',
             'items' => Symptom::all(),
-            'items2' => Disease::all()
+            'items2' => Disease::all(),
+            'item3' => Frequency::all()->count(),
         ];
 
         return view('dashboard.' . $data['resource'] . '.create', $data);
@@ -129,31 +131,35 @@ class RuleController extends Controller
     public function store(StoreRuleRequest $request)
     {
         $request->validate([
-            'antecedent_symptom_ids' => 'required'
+            'antecedent_symptom_ids' => 'array',
+            'antecedent_symptom_count' => 'integer',
+            'antecedent_symptom_score' => 'float',
         ]);
         
         $rule = Rule::create();
 
-        foreach($request->antecedent_symptom_ids as $antecedent_symptom_id) {
-            AntecedentSymptom::create([
-                'rule_id' => $rule->id,
-                'symptom_id' => $antecedent_symptom_id
-            ]);
+        if(is_array($request->antecedent_symptom_ids)) {
+            foreach($request->antecedent_symptom_ids as $antecedent_symptom_id) {
+                AntecedentSymptom::create([
+                    'rule_id' => $rule->id,
+                    'symptom_id' => $antecedent_symptom_id
+                ]);
+            }
         }
 
-        if($request->use_antecedent_symptom_presence_count) {
+        if($request->use_antecedent_symptom_count) {
             AntecedentSymptomCount::create([
                 'rule_id' => $rule->id,
-                'from' => $request->use_antecedent_symptom_presence_count_from ?: null,
-                'to' => $request->use_antecedent_symptom_presence_count_to ?: null,
+                'from' => $request->antecedent_symptom_count_from ?: null,
+                'to' => $request->antecedent_symptom_count_to ?: null,
             ]);
         }
 
-        if($request->use_antecedent_symptom_presence_frequency_score) {
+        if($request->use_antecedent_symptom_score) {
             AntecedentSymptomScore::create([
                 'rule_id' => $rule->id,
-                'from' => $request->antecedent_symptom_presence_frequency_score_from ?: null,
-                'to' => $request->antecedent_symptom_presence_frequency_score_to ?: null,
+                'from' => $request->antecedent_symptom_score_from ?: null,
+                'to' => $request->antecedent_symptom_score_to ?: null,
             ]);
         }
         
@@ -320,6 +326,8 @@ class RuleController extends Controller
         ]);
 
         AntecedentSymptom::where('rule_id', $rule->id)->delete();
+
+        AntecedentSymptomCount::where('rule_id', $rule->id)->delete();
 
         ConsequentSymptom::where('rule_id', $rule->id)->delete();
 
