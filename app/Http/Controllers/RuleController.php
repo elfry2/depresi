@@ -23,83 +23,107 @@ class RuleController extends Controller
      */
     public function index()
     {
-    //     $data = [
-    //         'title' => 'Aturan',
-    //         'resource' => 'rules',
-    //         'items' => new Rule
-    //     ];
+        $data = [
+            'title' => 'Aturan',
+            'resource' => 'rules',
+            'items' => new Rule
+        ];
 
-    //     $data['preferences'] = [
-    //         'sortingDirection' => PreferenceController::get(
-    //             $data['resource'] . 'SortingDirection') ?: 'asc'
-    //     ];
+        $data['preferences'] = [
+            'sortingDirection' => PreferenceController::get(
+                $data['resource'] . 'SortingDirection') ?: 'asc'
+        ];
 
-    //     $data['items'] = $data['items']->orderBy(
-    //         'id',
-    //         $data['preferences']['sortingDirection']
-    //     );
+        $data['items'] = $data['items']->orderBy(
+            'id',
+            $data['preferences']['sortingDirection']
+        );
 
-    //     /* BEGIN Search */
-    //     if(request('q')) {
-    //         $q = request('q');
+        /* BEGIN Search */
+        if(request('q')) {
+            $q = request('q');
 
-    //         $symptomIds = array_map(function($element) {
-    //             return $element['id'];
-    //         }, Symptom::select('id')
-    //         ->where('name', 'like', "%$q%")->get()->toArray());
+            $symptomIds = array_map(function($element) {
+                return $element['id'];
+            }, Symptom::select('id')
+            ->where('name', 'like', "%$q%")->get()->toArray());
             
-    //         $ruleIdsFromAntecedentSymptoms = AntecedentSymptom::select('rule_id')
-    //         ->distinct()->whereIn('symptom_id', $symptomIds)->get();
+            $ruleIdsFromAntecedentSymptoms = AntecedentSymptom::select('rule_id')
+            ->distinct()->whereIn('symptom_id', $symptomIds)->get();
     
-    //         $ruleIdsFromConsequentSymptoms
-    //         = ConsequentSymptom::select('rule_id')
-    //         ->distinct()->whereIn('symptom_id', $symptomIds)->get();
+            $ruleIdsFromConsequentSymptoms
+            = ConsequentSymptom::select('rule_id')
+            ->distinct()->whereIn('symptom_id', $symptomIds)->get();
     
-    //         $diseaseIds = array_map(function($element) {
-    //             return $element['id'];
-    //         }, Disease::select('id')
-    //         ->where('name', 'like', "%$q%")->get()->toArray());
+            $diseaseIds = array_map(function($element) {
+                return $element['id'];
+            }, Disease::select('id')
+            ->where('name', 'like', "%$q%")->get()->toArray());
     
-    //         $ruleIdsFromConsequentDiseases
-    //         = ConsequentDisease::select('rule_id')
-    //         ->distinct()->whereIn('disease_id', $diseaseIds)->get();
+            $ruleIdsFromConsequentDiseases
+            = ConsequentDisease::select('rule_id')
+            ->distinct()->whereIn('disease_id', $diseaseIds)->get();
     
-    //         $data['items']
-    //         = $data['items']->whereIn('id', $ruleIdsFromAntecedentSymptoms)
-    //         ->orWhereIn('id', $ruleIdsFromConsequentSymptoms)
-    //         ->orWhereIn('id', $ruleIdsFromConsequentDiseases);
-    //     }
+            $data['items']
+            = $data['items']->whereIn('id', $ruleIdsFromAntecedentSymptoms)
+            ->orWhereIn('id', $ruleIdsFromConsequentSymptoms)
+            ->orWhereIn('id', $ruleIdsFromConsequentDiseases);
+        }
 
-    //     /* END Search */
+        /* END Search */
 
-    //     $data['items'] = $data['items']->paginate(config('app.itemsPerPage'));
+        $data['items'] = $data['items']->paginate(config('app.itemsPerPage'));
 
-    //     for($i = 0; $i < count($data['items']); $i++) {
-    //         $antecedentSymptomNames = [];
+        for($i = 0; $i < count($data['items']); $i++) {
+            $antecedentSymptomNames = [];
 
-    //         foreach($data['items'][$i]->antecedent_symptoms as $antecedent_symptom) {
-    //             array_push($antecedentSymptomNames, $antecedent_symptom->symptom->name);
-    //         }
+            foreach($data['items'][$i]->antecedent_symptoms as $antecedent_symptom) {
+                array_push($antecedentSymptomNames, $antecedent_symptom->symptom->name);
+            }
 
-    //         $data['items'][$i]->antecedent_symptoms 
-    //         = ucfirst(strtolower(implode('; ', $antecedentSymptomNames)));
-    //     }
+            if($data['items'][$i]->antecedent_symptom_count) {
+                $count = $data['items'][$i]->antecedent_symptom_count;
 
-    //     for($i = 0; $i < count($data['items']); $i++) {
-    //         $consequentSymptomNames = [];
+                if($count->from) {
+                    array_push($antecedentSymptomNames, 'Jumlah gejala >= ' . $count->from);
+                }
 
-    //         foreach(
-    //             $data['items'][$i]->consequent_symptoms as $consequentSymptom) {
-    //             array_push(
-    //                 $consequentSymptomNames, $consequentSymptom->symptom->name
-    //             );
-    //         }
+                if($count->to) {
+                    array_push($antecedentSymptomNames, 'Jumlah gejala <= ' . $count->to);
+                }
+            }
 
-    //         $data['items'][$i]->consequent_symptoms 
-    //         = ucfirst(strtolower(implode('; ', $consequentSymptomNames)));
-    //     }
+            if($data['items'][$i]->antecedent_symptom_score) {
+                $score = $data['items'][$i]->antecedent_symptom_score;
 
-    //     return view('dashboard.' . $data['resource'] . '.index', $data);
+                if($score->from) {
+                    array_push($antecedentSymptomNames, 'Skor >= ' . $score->from);
+                }
+
+                if($score->to) {
+                    array_push($antecedentSymptomNames, 'Skor <= ' . $score->to);
+                }
+            }
+
+            $data['items'][$i]->antecedent_symptoms 
+            = ucfirst(strtolower(implode('; ', $antecedentSymptomNames)));
+        }
+
+        for($i = 0; $i < count($data['items']); $i++) {
+            $consequentSymptomNames = [];
+
+            foreach(
+                $data['items'][$i]->consequent_symptoms as $consequentSymptom) {
+                array_push(
+                    $consequentSymptomNames, $consequentSymptom->symptom->name
+                );
+            }
+
+            $data['items'][$i]->consequent_symptoms 
+            = ucfirst(strtolower(implode('; ', $consequentSymptomNames)));
+        }
+
+        return view('dashboard.' . $data['resource'] . '.index', $data);
     }
 
     /**
@@ -203,8 +227,8 @@ class RuleController extends Controller
             ]);
         }
 
-        // return redirect('/rules')
-        return redirect('/rules/' . $rule->id . '/edit')
+        return redirect('/rules')
+        // return redirect('/rules/' . $rule->id . '/edit')
         ->with('message', (object) [
             'type' => 'success',
             'content' => 'Aturan berhasil ditambahkan.'
@@ -428,8 +452,8 @@ class RuleController extends Controller
             ]);
         }
 
-        // return redirect('/rules')
-        return redirect('/rules/' . $rule->id . '/edit')
+        return redirect('/rules')
+        // return redirect('/rules/' . $rule->id . '/edit')
         ->with('message', (object) [
             'type' => 'success',
             'content' => 'Aturan berhasil disunting.'

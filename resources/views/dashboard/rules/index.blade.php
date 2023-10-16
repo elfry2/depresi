@@ -32,7 +32,7 @@
                         <tr>
                             <td>{{ $loop->iteration + (request('page') ? request('page') - 1 : 0) * config('app.itemsPerPage') }}</td>
                             <td>{{ $item->id }}</td>
-                            <td>{{ $item->antecedents }}</td>
+                            <td>{{ $item->antecedent_symptoms }}</td>
                             <td>{{ $item->consequent_symptoms }}</td>
                             <td>@if($item->consequent_disease) {{ $item->consequent_disease->disease->name }} @endif</td>
                             <td align="right">
