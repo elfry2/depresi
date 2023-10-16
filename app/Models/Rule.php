@@ -11,7 +11,7 @@ class Rule extends Model
     use HasFactory;
 
     protected $with = [
-        'antecedents',
+        'antecedent_symptoms',
         'consequent_symptoms',
         'consequent_disease'
     ];
@@ -36,13 +36,13 @@ class Rule extends Model
         $rules = self::all();
 
         foreach($rules as $key => $rule) {
-            $antecedents = [];
+            $antecedent_symptoms = [];
 
-            foreach($rule->antecedents as $antecedent) {
-                array_push($antecedents, Symptom::find($antecedent->symptom_id));
+            foreach($rule->antecedent_symptoms as $antecedent) {
+                array_push($antecedent_symptoms, Symptom::find($antecedent->symptom_id));
             }
 
-            $rules[$key]->antecedents = collect($antecedents);
+            $rules[$key]->antecedent_symptoms = collect($antecedent_symptoms);
 
             $consequentSymptoms = [];
 
@@ -64,5 +64,13 @@ class Rule extends Model
         }
 
         return $rules;
+    }
+
+    function antecedent_symptom_count() {
+        return $this->hasOne(AntecedentSymptomCount::class);
+    }
+    
+    function antecedent_symptom_score() {
+        return $this->hasOne(AntecedentSymptomScore::class);
     }
 }

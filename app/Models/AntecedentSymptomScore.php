@@ -14,4 +14,8 @@ class AntecedentSymptomScore extends Model
         'from',
         'to',
     ];
+
+    function rule() {
+        return $this->belongsTo(Rule::class);
+    }
 }

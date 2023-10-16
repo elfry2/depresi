@@ -11,7 +11,7 @@
                 @csrf
                 <div class="row">
                     <div class="col">
-                        <h5>Gejala yang dibutuhkan</h5>
+                        <h5>Kondisi yang dibutuhkan</h5>
                         @if ($items->count() <= 0)
                             <p class="text-muted">Belum ada gejala. Klik pada menu Gejala untuk menambahkan.</p>
                         @else
@@ -19,15 +19,59 @@
                                 <tbody>
                                     @foreach ($items as $item)
                                         <tr>
-                                            <td><input name="antecedent_ids[]" value="{{ $item->id }}"
+                                            <td><input name="antecedent_symptom_ids[]" value="{{ $item->id }}"
                                                     id="inputSymptom{{ $item->id }}CheckboxInput" type="checkbox"
-                                                    class="form-check-input" @if (in_array($item->id, $theItem->antecedent_ids)) checked @endif></td>
+                                                    class="form-check-input" @if (in_array($item->id, $theItem->antecedent_symptom_ids)) checked @endif></td>
                                             <td><label for="inputSymptom{{ $item->id }}CheckboxInput"
                                                     class="form-check-label">{{ $item->name }}</label></td>
                                         </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <label for="useSymptomCountCheckboxInput" class="form-check-label">Jumlah gejala yang muncul</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomCountCheckboxInput" name="use_antecedent_symptom_count" value="1" @if($theItem->antecedent_symptom_count) checked @endif>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomCountFromNumberInput" name="antecedent_symptom_count_from" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_count_from') ?? ($theItem->antecedent_symptom_count ? $theItem->antecedent_symptom_count->from : null) }}" min="0" max="{{ $items->count() }}">
+                                                <label for="symptomCountFromNumberInput" class="form-label">Dari</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomCountToNumberInput" name="antecedent_symptom_count_to" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_count_to') ?? ($theItem->antecedent_symptom_count ? $theItem->antecedent_symptom_count->to : null) }}" min="0" max="{{ $items->count() }}">
+                                                <label for="symptomCountToNumberInput" class="form-label">Hingga</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mt-2">
+                                <div class="card-body">
+                                    <div class="form-check">
+                                        <label for="useSymptomScoreCheckboxInput" class="form-check-label">Skor frekuensi kemunculan gejala</label>
+                                        <input type="checkbox" class="form-check-input" id="useSymptomScoreCheckboxInput" name="use_antecedent_symptom_score" value="1" @if($theItem->antecedent_symptom_score) checked @endif>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomScoreFromNumberInput" name="antecedent_symptom_score_from" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_score_from') ?? ($theItem->antecedent_symptom_score ? $theItem->antecedent_symptom_score->from : null) }}" min="0" max="{{ $items->count() * $item3 }}">
+                                                <label for="symptomScoreFromNumberInput" class="form-label">Dari</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm">
+                                            <div class="form-floating">
+                                                <input id="symptomScoreToNumberInput" name="antecedent_symptom_score_to" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_score_to') ?? ($theItem->antecedent_symptom_score ? $theItem->antecedent_symptom_score->to : null) }}" min="0" max="{{ $items->count() * $item3 }}">
+                                                <label for="symptomScoreToNumberInput" class="form-label">Hingga</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                     <div class="col">

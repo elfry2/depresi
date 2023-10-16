@@ -36,13 +36,13 @@
                                     <div class="row mt-2">
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomCountFromNumberInput" name="antecedent_symptom_count_from" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() }}">
+                                                <input id="symptomCountFromNumberInput" name="antecedent_symptom_count_from" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_count_from') }}" min="0" max="{{ $items->count() }}">
                                                 <label for="symptomCountFromNumberInput" class="form-label">Dari</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomCountToNumberInput" name="antecedent_symptom_count_to" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() }}">
+                                                <input id="symptomCountToNumberInput" name="antecedent_symptom_count_to" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_count_to') }}" min="0" max="{{ $items->count() }}">
                                                 <label for="symptomCountToNumberInput" class="form-label">Hingga</label>
                                             </div>
                                         </div>
@@ -58,13 +58,13 @@
                                     <div class="row mt-2">
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomScoreFromNumberInput" name="antecedent_symptom_score_from" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() * $item3 }}">
+                                                <input id="symptomScoreFromNumberInput" name="antecedent_symptom_score_from" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_score_from') }}" min="0" max="{{ $items->count() * $item3 }}">
                                                 <label for="symptomScoreFromNumberInput" class="form-label">Dari</label>
                                             </div>
                                         </div>
                                         <div class="col-sm">
                                             <div class="form-floating">
-                                                <input id="symptomScoreToNumberInput" name="antecedent_symptom_score_to" type="number" class="form-control" placeholder="" min="0" max="{{ $items->count() * $item3 }}">
+                                                <input id="symptomScoreToNumberInput" name="antecedent_symptom_score_to" type="number" class="form-control" placeholder="" value="{{ old('antecedent_symptom_score_to') }}" min="0" max="{{ $items->count() * $item3 }}">
                                                 <label for="symptomScoreToNumberInput" class="form-label">Hingga</label>
                                             </div>
                                         </div>
