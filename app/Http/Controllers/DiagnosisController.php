@@ -2,89 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Rule;
-use App\Models\Expert;
 use App\Models\Disease;
+use App\Models\Expert;
+use App\Models\Frequency;
+use App\Models\Rule;
 use App\Models\Symptom;
-use App\Models\Diagnosis;
-use App\Models\Antecedent;
-use App\Models\Probability;
-use App\Policies\SymptomPolicy;
-use App\Models\ConsequentSymptom;
-use App\Http\Requests\StoreDiagnosisRequest;
-use App\Http\Requests\UpdateDiagnosisRequest;
+use Illuminate\Http\Request;
 
 class DiagnosisController extends Controller
 {
-    protected static $title = 'Skrining';
     protected static $resource = 'diagnosis';
-
-    public static function applyRules($workspace)
-    {
-        $rules = $workspace['rules'];
-
-        $iteratedSymptomIds = array_map(function($element) {
-            return $element['id'];
-        }, $workspace['iterated']['symptoms']);
-
-        $absentIteratedSymptomIds = array_map(function($element) {
-            if(!$element['isPresent']) return $element['id'];
-        }, $workspace['iterated']['symptoms']);
-
-        foreach($rules as $rule) {
-            $currentRuleAntecedentIds = array_map(function($element) {
-                return $element['id'];
-            }, $rule->antecedents->toArray());
-    
-            if(array_intersect(
-                $currentRuleAntecedentIds,
-                $iteratedSymptomIds
-            ) === $currentRuleAntecedentIds
-            && count(array_intersect(
-                $currentRuleAntecedentIds,
-                $absentIteratedSymptomIds
-            )) === 0) {
-                foreach($rule->consequent_symptoms as $symptom) {
-                    $entry = [
-                        'id' => $symptom->id,
-                        'isPresent' => false
-                    ];
-    
-                    $iteratedSymptomIndex
-                    = array_search($entry, $workspace['iterated']['symptoms']);
-    
-                    if($iteratedSymptomIndex !== false) {
-                        array_splice(
-                            $workspace['iterated']['symptoms'],
-                            $iteratedSymptomIndex, 1
-                        );
-                    }
-    
-                    $entry = [
-                        'id' => $symptom->id,
-                        'isPresent' => true
-                    ];
-    
-                    if(!in_array($entry, $workspace['iterated']['symptoms'])) {
-                        array_push($workspace['iterated']['symptoms'], $entry);
-                    }
-                }
-    
-                if($rule->consequent_disease) {
-                    $entry = [
-                        'id' => $rule->consequent_disease->id,
-                        'ruleId' => $rule->id
-                    ];
-                    
-                    if(!in_array($entry, $workspace['iterated']['diseases'])) {
-                        array_push($workspace['iterated']['diseases'], $entry);
-                    }
-                }
-            }
-        }
-
-        return $workspace;
-    }
+    protected static $title = 'Skrining';
 
     /**
      * Display a listing of the resource.
@@ -93,41 +21,138 @@ class DiagnosisController extends Controller
      */
     public function index()
     {
-        $data = [
+        $data = (object) [
+            'resource' => self::$resource,
             'title' => self::$title,
-            'resource' => self::$resource
+            'item' => Symptom::count(),
         ];
 
-        if(
-            !is_array(session('workspace'))
-            || request('purgeWorkspace')
-        ) {
-            $rules = Rule::allAndAllRelated();
-
-            // $rules = $rules->sortBy(function($item, $key) {
-            //     return count($item->antecedents);
-            // })->values()->all();
-
-            session([
-                'workspace' => [
-                    'rules' =>  $rules,
-                    'indices' => [
-                        'rule' => 0,
-                        'antecedent' => 0
-                    ],
-                    'iterated' => [
-                        'symptoms' => [],
-                        'diseases' => []
-                    ]
-                ]
-            ]);
-            
-            return redirect('/'. $data['resource']);
+        if(!session('workspace') || request('purgeWorkspace')) {
+            session(['workspace' => (object) [
+                'iteratedAntecedentSymptoms' => [],
+                'consequentDisease' => null,
+                'currentRule' => Rule::first(),
+            ]]);
         }
 
-        return view($data['resource'] . '.index', $data);
+        return view(self::$resource . '.index', (array) $data);
     }
 
+    protected function triggerConsequences($workspace) {
+        $rule = $workspace->currentRule;
+
+        $absentIteratedAntecedentSymptomIds = array_map(
+            function($element) {
+                if($element->frequency->value <= 0) return $element->id;
+
+                return false;
+            }, $workspace->iteratedAntecedentSymptoms
+        );
+
+        $antecedentSymptomIds = [];
+
+        foreach($rule->antecedent_symptoms as $antecedentSymptom) {
+            array_push(
+                $antecedentSymptomIds,
+                $antecedentSymptom->symptom->id
+            );
+        }
+
+        /**
+         * Check whether a symptom of this rule is absent. If yes, skip the
+         * rule.
+         */
+        if(count(array_intersect(
+            $antecedentSymptomIds,
+            $absentIteratedAntecedentSymptomIds
+        )) > 0) return $workspace;
+
+        $hasUniterated = false;
+
+        foreach($rule->antecedent_symptoms as $antecedentSymptom) {
+                
+            /**
+             * Check whether the current symptom is already iterated. If no,
+             *  ask this one.
+             */
+
+             $antecedentSymptom = $antecedentSymptom->symptom;
+
+             $iteratedAntecedentSymptomIds = array_map(function($element) {
+                return $element->id;
+             }, $workspace->iteratedAntecedentSymptoms);
+
+            if(!in_array(
+                $antecedentSymptom->id,
+                $iteratedAntecedentSymptomIds
+            )) {
+                $hasUniterated = true;
+
+                break;
+            }
+        }
+
+        if($hasUniterated) return $workspace;
+
+        $presentIteratedAntecedentSymptoms = array_filter(
+            $workspace->iteratedAntecedentSymptoms,
+            function($element) {
+                return $element->frequency->value > 0;
+        });
+
+        /** Check whether the current rule uses iterated symptom count. If
+         * count not in range, skip the rule.
+        */
+        if(isset($rule->antecedent_symptom_count)) {
+            if(isset($rule->antecedent_symptom_count->from)
+            && count($presentIteratedAntecedentSymptoms)
+            < $rule->antecedent_symptom_count->from
+            ) return $workspace;
+
+            if(isset($rule->antecedent_symptom_count->to)
+            && count($presentIteratedAntecedentSymptoms)
+            > $rule->antecedent_symptom_count->to
+            ) return $workspace;
+        }
+
+        /** Check whether the current rule uses iterated symptom frequency
+         * score. If score not in range, skip the rule.
+        */
+        $score = 0;
+
+        foreach($workspace->iteratedAntecedentSymptoms as $symptom) {
+            $score += $symptom->frequency->value;
+        }
+
+        if(isset($rule->antecedent_symptom_score)) {
+            if(isset($rule->antecedent_symptom_score->from)
+            && $score < $rule->antecedent_symptom_score->from) return $workspace;
+
+            if(isset($rule->antecedent_symptom_score->to)
+            && $score > $rule->antecedent_symptom_score->to) return $workspace;
+        }
+
+
+        if(is_iterable($rule->consequent_symptoms)) {
+            foreach($rule->consequent_symptoms as $consequentSymptom) {
+                $consequentSymptom = $consequentSymptom->symptom;
+                $consequentSymptom->frequency
+                = Frequency::where('value', '>', 0)->first(); // ffffffck
+
+                array_push(
+                    $workspace->iteratedAntecedentSymptoms,
+                    $consequentSymptom
+                );
+            }
+        }
+
+        if(isset($rule->consequent_disease)) {
+            $workspace->consequentDisease = $rule->consequent_disease->disease;
+        }
+
+        return $workspace;
+    }
+    
     /**
      * Show the form for creating a new resource.
      *
@@ -135,275 +160,175 @@ class DiagnosisController extends Controller
      */
     public function create()
     {
-        if(!session('workspace')) return redirect('/diagnosis');
-        
-        $data = [
-            'title' => self::$title,
-            'resource' => self::$resource,
-        ];
-
         $workspace = session('workspace');
 
-        $rules = $workspace['rules'];
-
-        $antecedentIndex = $workspace['indices']['antecedent'];
-
-        $ruleIndex = $workspace['indices']['rule'];
-
-        $iteratedSymptomIds = array_map(function($element) {
-            return $element['id'];
-        }, $workspace['iterated']['symptoms']);
-
-        $absentIteratedSymptomIds = array_map(function($element) {
-            if(!$element['isPresent']) return $element['id'];
-        }, $workspace['iterated']['symptoms']);
-
-        for ($i = $ruleIndex; $i < count($rules); $i++) { 
-            $workspace['indices']['rule'] = $i;
-            
-            $currentRuleAntecedentIds = array_map(function($element) {
-                return $element['id'];
-            }, $rules[$i]->antecedents->toArray());
-            
-            if (count(array_intersect(
-                $currentRuleAntecedentIds,
-                $absentIteratedSymptomIds
-            )) <= 0) {
-
-                $isFound = false;
-
-                for (
-                    $j = $antecedentIndex;
-                    $j < count($currentRuleAntecedentIds);
-                    $j++
-                ) { 
-                    $workspace['indices']['antecedent'] = $j;
-
-                    if(!in_array(
-                        $currentRuleAntecedentIds[$j],
-                        $iteratedSymptomIds
-                    )) {
-                        $isFound = true;
-                        
-                        break;
-                    }
-                }
-
-                if($isFound) {
-                    $workspace['indices']['rule'] = $i;
-                    
-                    break;
-                }
-
-                $antecedentIndex = 0;
-            }
-
-            if($i+1 >= count($rules)) $workspace['indices']['rule'] = $i+1;
-        }
-
-        // $currentRuleAntecedentIds = array_map(function($element) {
-        //     return $element['id'];
-        // }, $rules[$ruleIndex]->antecedents->toArray());
-
-        // if(session('next')) {
-        //     while($antecedentIndex < count($rules[$ruleIndex]->antecedents)) {
-        //         $workspace['indices']['antecedent'] = ++$antecedentIndex;
-
-        //         if($antecedentIndex >= count($rules[$ruleIndex]->antecedents))
-        //         break;
-                
-        //         if(!in_array(
-        //             $currentRuleAntecedentIds[$antecedentIndex],
-        //             $iteratedSymptomIds
-        //         )) break;
-        //     }
-            
-        //     if($antecedentIndex >= count($rules[$ruleIndex]->antecedents)) {                
-        //         while($ruleIndex < count($rules)) {
-        //             $workspace['indices']['rule'] = ++$ruleIndex;
-
-        //             if($ruleIndex >= count($rules)) break;
-
-        //             $currentRuleAntecedentIds = array_map(function($element) {
-        //                 return $element['id'];
-        //             }, $rules[$ruleIndex]->antecedents->toArray());
-    
-        //             if(count(array_intersect(
-        //                 $currentRuleAntecedentIds,
-        //                 $absentIteratedSymptomIds
-        //             )) === 0) break;
-        //         }
-
-        //         $antecedentIndex = 0;
-
-        //         $workspace['indices']['antecedent'] = $antecedentIndex;
-        //     }
-        // }
-
-        if($workspace['indices']['rule'] >= count($workspace['rules'])) {
-            return redirect('/diagnosis/result');
-        }
-
-        $data['item']
-        = $workspace['rules'][$workspace['indices']['rule']]
-        ->antecedents[$workspace['indices']['antecedent']];
-
-        $data['debug'] = [
-            'currentItemId' => $data['item']->id,
-            'indices' => $workspace['indices'],
-            'iterated' => $workspace['iterated']
+        if(!$workspace) return redirect('/diagnosis');
+        
+        $data = (object) [
+            'title' => self::$title,
+            'resource' => self::$resource,
+            'item' => null,
+            'items2' => Frequency::all(),
         ];
 
+        /**
+         * BEGIN forward chaining
+         * 
+         * Please never ask me how it works.
+         */
+
+        $rules = Rule::all();
+
+        foreach($rules as $rule) {
+            $workspace->currentRule = $rule;
+
+            $hasUniterated = false;
+
+            $absentIteratedAntecedentSymptomIds = array_map(
+                function($element) {
+                    if($element->frequency->value <= 0) return $element->id;
+
+                    return false;
+                }, $workspace->iteratedAntecedentSymptoms
+            );
+
+            $antecedentSymptomIds = [];
+
+            foreach($rule->antecedent_symptoms as $antecedentSymptom) {
+                array_push(
+                    $antecedentSymptomIds,
+                    $antecedentSymptom->symptom->id
+                );
+            }
+
+            /**
+             * Check whether a symptom of this rule is absent. If yes, skip the
+             * rule.
+             */
+            if(count(array_intersect(
+                $antecedentSymptomIds,
+                $absentIteratedAntecedentSymptomIds
+            )) > 0) continue;
+
+            foreach($rule->antecedent_symptoms as $antecedentSymptom) {
+                
+                /**
+                 * Check whether the current symptom is already iterated. If no,
+                 *  ask this one.
+                 */
+
+                 $antecedentSymptom = $antecedentSymptom->symptom;
+
+                 $iteratedAntecedentSymptomIds = array_map(function($element) {
+                    return $element->id;
+                 }, $workspace->iteratedAntecedentSymptoms);
+
+                if(!in_array(
+                    $antecedentSymptom->id,
+                    $iteratedAntecedentSymptomIds
+                )) {
+                    $data->item = $antecedentSymptom;
+
+                    $hasUniterated = true;
+
+                    break;
+                }
+            }
+
+            if($hasUniterated) break;
+
+            $workspace = $this->triggerConsequences($workspace);
+        }
+
         session(['workspace' => $workspace]);
-        
-        return view($data['resource'] . '.create', $data);
+
+        if(is_null($data->item)) return redirect('/diagnosis/result');
+
+        /** END forward chaining */
+
+        return view(self::$resource . '.create', (array) $data);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreDiagnosisRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreDiagnosisRequest $request)
+    public function store(Request $request)
     {
         $workspace = session('workspace');
 
-        $entry = [
-            'id' => (int) $request->id,
-            'isPresent' => (bool) $request->isPresent
-        ];
+        $entry = Symptom::find((integer) $request->id);
 
-        if(!in_array($entry, $workspace['iterated']['symptoms'])) {
-            array_push($workspace['iterated']['symptoms'], $entry);
+        $entry->frequency = Frequency::find((float) $request->frequency_id);
+
+        if(!in_array($entry, $workspace->iteratedAntecedentSymptoms)) {
+            array_push($workspace->iteratedAntecedentSymptoms, $entry);
         }
 
-        $rules = $workspace['rules'];
-
-        $ruleIndex = $workspace['indices']['rule'];
-
-        $workspace = self::applyRules($workspace);
+        $workspace = $this->triggerConsequences($workspace);
 
         session(['workspace' => $workspace]);
         
-        return redirect('/diagnosis/create')->with('next', true);
+        return redirect('/diagnosis/create');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Diagnosis  $diagnosis
      * @return \Illuminate\Http\Response
      */
-    public function show(Diagnosis $diagnosis)
+    public function show()
     {
-        if(!session('workspace')) return redirect('/diagnosis');
-        
-        $data = [
+        if(is_null(session('workspace')))
+        return redirect('/' . self::$resource);
+
+        $data = (object) [
             'title' => self::$title,
-            'resource' => self::$resource
+            'resource' => self::$resource,
+            'item' => Disease::where('is_healthy', true)->first()
         ];
 
         $workspace = session('workspace');
 
-        $workspace = self::applyRules($workspace);
-
-        $data['item'] = [
-            'isFound' => 0,
-            'name' => 'Tidak memiliki kecenderungan depresi.',
-            'bayes' => 1
-        ];
-
-        $ruleId = end($workspace['iterated']['diseases']);
-
-        if($ruleId) {
-            $data['item']['isFound'] = 1;
-
-            $ruleId = $ruleId['ruleId'];
-            
-            $rule = Rule::find($ruleId);
-
-            $diseases = Disease::all();
-    
-            /** P(H|EF) = P(E|H)(F|H)P(H)/(P(E|H)(F|H)P(H)+...) */
-    
-            $numerator
-            = Disease::find($rule->consequent_disease->disease_id)->probability;
-    
-            foreach($rule->antecedents as $antecedent) {
-                $probability
-                = Probability::where('symptom_id', $antecedent->symptom_id)
-                ->where('disease_id', $rule->consequent_disease->disease_id)
-                ->first();
-    
-                $numerator *= ($probability ? $probability->amount : 0);
-            }
-    
-            $denominatorSum = 0;
-        
-            foreach ($diseases as $disease) {
-                $denominator = $disease->probability;
-    
-                foreach($rule->antecedents as $antecedent) {
-                    $probability
-                    = Probability::where('symptom_id', $antecedent->symptom_id)
-                    ->where('disease_id', $disease->id)
-                    ->first();
-        
-                    $denominator *= ($probability ? $probability->amount : 0);
-                }
-    
-                $denominatorSum += $denominator;
-            }
-    
-            $bayes = $numerator/$denominatorSum;
-    
-            /** So that was naive bayes */
-
-            $data['item']['name']
-            = Disease::find($rule->consequent_disease->disease_id)->name;
-
-            $data['item']['bayes']
-            = $bayes;
-    
-            $presentSymptomIds = array_map(function($element) {
-                if($element['isPresent']) return $element['id'];
-            }, $workspace['iterated']['symptoms']);
-
-            $presentSymptomIds
-            = array_filter($presentSymptomIds, function($element) {
-                return !is_null($element);
-            });
-    
-            $data['item']['presentSymptoms'] = array_map(function($element) {
-                return Symptom::find($element)->name;
-            }, $presentSymptomIds);
-    
-            $antecedentIds = array_map(function($element) {
-                return $element['symptom_id'];
-            }, Antecedent::where('rule_id', $ruleId)->get()->toArray());
-    
-            $data['item']['antecedents'] = array_map(function($element) {
-                return Symptom::find($element)->name;
-            }, $antecedentIds);
+        if(!is_null($workspace->consequentDisease)) {
+            $data->item = $workspace->consequentDisease;
         }
+
+        $presentIteratedAntecedentSymptoms = array_filter(
+            $workspace->iteratedAntecedentSymptoms,
+            function($element) {
+                return $element->frequency->value > 0;
+            });
+        
+        $data->item->bayes = BayesController::getProbability(
+            $data->item,
+            $presentIteratedAntecedentSymptoms
+        );
+
+        $score = 0;
+
+        foreach($workspace->iteratedAntecedentSymptoms as $symptom) {
+            $score += $symptom->frequency->value;
+        }
+
+        $data->item->score = $score;
+        $data->items2 = collect($workspace->iteratedAntecedentSymptoms);
+        $data->items3 = Expert::all();
 
         session(['workspace' => null]);
 
-        $data['item'] = (object) $data['item'];
-
-        $data['items2'] = Expert::all();
-
-        return view('diagnosis.show', $data);
+        return view(self::$resource . '.show', (array) $data);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Diagnosis  $diagnosis
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit(Diagnosis $diagnosis)
+    public function edit($id)
     {
         //
     }
@@ -411,11 +336,11 @@ class DiagnosisController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateDiagnosisRequest  $request
-     * @param  \App\Models\Diagnosis  $diagnosis
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDiagnosisRequest $request, Diagnosis $diagnosis)
+    public function update(Request $request, $id)
     {
         //
     }
@@ -423,10 +348,10 @@ class DiagnosisController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-    * @param  \App\Models\Diagnosis  $diagnosis
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Diagnosis $diagnosis)
+    public function destroy($id)
     {
         //
     }

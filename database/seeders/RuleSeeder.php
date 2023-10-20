@@ -6,8 +6,10 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Rule;
 use App\Models\AntecedentSymptom;
+use App\Models\AntecedentSymptomScore;
 use App\Models\ConsequentSymptom;
 use App\Models\ConsequentDisease;
+use App\Models\Symptom;
 
 // [A B C D E] C 3
 // A B C
@@ -95,16 +97,35 @@ class RuleSeeder extends Seeder
      */
     public function run()
     {
-        $ruleId = Rule::create()->id;
+        for ($i=1; $i <= Symptom::count(); $i++) { 
+            $ruleId = Rule::create()->id;
 
-        foreach([1, 2, 3, 4, 5] as $symptomId) AntecedentSymptom::create([
-            'rule_id' => $ruleId,
-            'symptom_id' => $symptomId
-        ]);
+            AntecedentSymptom::create([
+                'rule_id' => $ruleId,
+                'symptom_id' => $i
+            ]);
+        }
 
-        ConsequentDisease::create([
-            'rule_id' => $ruleId,
-            'disease_id' => 1
-        ]);
+        foreach([
+            ['from' => 0, 'to' => 25, 'consequent_disease_id' => 1],
+            ['from' => 26, 'to' => 50, 'consequent_disease_id' => 2],
+            ['from' => 51, 'to' => 75, 'consequent_disease_id' => 3],
+            ['from' => 76, 'to' => 99, 'consequent_disease_id' => 4],
+        ] as $item) {
+            $item['rule_id'] = Rule::create()->id;
+
+            if($item['consequent_disease_id']) {
+                ConsequentDisease::create([
+                    'rule_id' => $item['rule_id'],
+                    'disease_id' => $item['consequent_disease_id']
+                ]);
+            }
+
+            AntecedentSymptomScore::create([
+                'rule_id' => $item['rule_id'],
+                'from' => $item['from'],
+                'to' => $item['to'],
+            ]);
+        }
     }
 }

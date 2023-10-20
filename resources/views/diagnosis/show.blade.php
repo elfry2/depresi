@@ -27,34 +27,30 @@
                     <div class="card bg-white shadow-sm mt-2 w-100" style="">
                         <div class="card-body py-5">
                             <center>
-                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if ($item->isFound)
+                                <p>Dari hasil skrining yang dilakukan, dinyatakan bahwa anda @if (!$item->is_healthy)
                                     memiliki kecenderungan
                                 @endif</p>
                                 <h1 class="mb-0 pb-0">{{ $item->name }}</h1>
-                                @if ($item->isFound)
-                                    <p class="m-0 p-0 fw-light text-center">Probabilitas: {{ $item->bayes }}</p>
-                                    <p class="mt-3 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog)</p>
-                                @endif
+                                <p class="m-0 p-0 fw-light text-center">Skor: {{ $item->score }}/{{ $items2->count() * 3 }} | Probabilitas: {{ $item->bayes }}</p>
                             </center>
-                            @if ($item->isFound)
-                                <div class="row mt-5">
-                                    <div class="col-lg">
-                                        <h5>Gejala-gejala gangguan:</h5>
-                                        <ul>
-                                            @foreach ($item->antecedents as $symptom)
-                                                <li>{{ $symptom }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                    <div class="col-lg">
-                                        <h5>Gejala-gejala yang ditemukan:</h5>
-                                        <ul>
-                                            @foreach ($item->presentSymptoms as $symptom)
-                                                <li>{{ $symptom }}</li>
-                                            @endforeach
-                                        </ul>
-                                    </div>
-                                </div>
+                            @if (count($items2) > 0)
+                            <table class="mt-5 table table-responsive">
+                                <tr>
+                                    <th>Gejala</th>
+                                    <th>Frekuensi</th>
+                                    <th>Skor</th>
+                                </tr>
+                                @foreach ($items2 as $item2)
+                                <tr>
+                                    <td>{{ $item2->name }}</td>
+                                    <td>{{ $item2->frequency->name }}</td>
+                                    <td>{{ $item2->frequency->value }}</td>
+                                </tr>
+                                @endforeach
+                            </table>
+                            @endif
+                            @if (!$item->is_healthy)
+                            <p class="mt-5 text-center">Disarankan anda segera menemui profesional di bidang kesehatan jiwa (dokter spesialis kesehatan jiwa dan psikolog).</p>
                             @endif
                         </div>
                         <div class="card-footer bg-white p-0">
@@ -63,11 +59,11 @@
                     </div>
                     <div class="hide-on-print">
                         <h3 class="mt-5 text-center">Konsultasi dengan pakar kami!</h3>
-                    @if ($items2->count() <= 0)
+                    @if (count($items3) <= 0)
                         @include('components.dashboard.no-item-text')
                     @else
                         <div class="row mt-5">
-                            @foreach ($items2 as $item)
+                            @foreach ($items3 as $item)
                                 <div class="col-lg-6">
                                     <div class="card mb-4 overflow-auto m-0">
                                         <div class="d-flex">
