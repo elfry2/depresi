@@ -25,10 +25,12 @@ class Symptom extends Model
 
     function probability_given(Disease $disease) : float
     {
-        return Probability::where([
+        $probability = Probability::where([
             'symptom_id' => $this->id,
             'disease_id' => $disease->id
-        ])->first()->amount;
+        ])->first();
+		
+		return $probability ? $probability->amount : 0;
     }
 
     public function parent_antecedents()
