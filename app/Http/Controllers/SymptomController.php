@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Disease;
 use App\Models\Symptom;
-use App\Models\Antecedent;
+use App\Models\AntecedentSymptom;
 use App\Models\Probability;
 use App\Models\ConsequentSymptom;
 use App\Http\Requests\StoreSymptomRequest;
@@ -162,7 +162,7 @@ class SymptomController extends Controller
     {
         Probability::where('symptom_id', $symptom->id)->delete();
         
-        Antecedent::where('symptom_id', $symptom->id)->delete();
+        AntecedentSymptom::where('symptom_id', $symptom->id)->delete();
 
         ConsequentSymptom::where('symptom_id', $symptom->id)->delete();
         
