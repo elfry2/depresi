@@ -102,13 +102,17 @@ class RuleSeeder extends Seeder
 
             AntecedentSymptom::create([
                 'rule_id' => $ruleId,
-                'symptom_id' => 1,
+                'symptom_id' => $i,
             ]);
 
-            AntecedentSymptom::create([
-                'rule_id' => $ruleId,
-                'symptom_id' => $i
-            ]);
+            foreach([1, 12] as $symptomId) {
+                if($i === $symptomId) continue;
+
+                AntecedentSymptom::create([
+                    'rule_id' => $ruleId,
+                    'symptom_id' => $symptomId,
+                ]);
+            }
 
             ConsequentDisease::create([
                 'rule_id' => $ruleId,
@@ -124,17 +128,19 @@ class RuleSeeder extends Seeder
         ] as $item) {
             $item['rule_id'] = Rule::create()->id;
 
+            foreach([1, 12] as $symptomId) {
+                AntecedentSymptom::create([
+                    'rule_id' => $item['rule_id'],
+                    'symptom_id' => $symptomId,
+                ]);
+            }
+
             if($item['consequent_disease_id']) {
                 ConsequentDisease::create([
                     'rule_id' => $item['rule_id'],
                     'disease_id' => $item['consequent_disease_id']
                 ]);
             }
-
-            AntecedentSymptom::create([
-                'rule_id' => $item['rule_id'],
-                'symptom_id' => 1,
-            ]);
 
             AntecedentSymptomScore::create([
                 'rule_id' => $item['rule_id'],
