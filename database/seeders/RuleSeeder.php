@@ -105,7 +105,7 @@ class RuleSeeder extends Seeder
                 'symptom_id' => $i,
             ]);
 
-            foreach([1, 12] as $symptomId) {
+            foreach([1, 2] as $symptomId) {
                 if($i === $symptomId) continue;
 
                 AntecedentSymptom::create([
@@ -127,7 +127,7 @@ class RuleSeeder extends Seeder
         ] as $item) {
             $item['rule_id'] = Rule::create()->id;
 
-            foreach([1, 12] as $symptomId) {
+            foreach([1, 2] as $symptomId) {
                 AntecedentSymptom::create([
                     'rule_id' => $item['rule_id'],
                     'symptom_id' => $symptomId,

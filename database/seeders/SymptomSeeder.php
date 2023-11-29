@@ -17,6 +17,7 @@ class SymptomSeeder extends Seeder
     {
         foreach([
             'Saya merasa sedih sepanjang hari',
+            'Saya kehilangan minat terhadap aktivitas-aktivitas yang biasa dilakukan',
             'Orang lain melihat saya selalu murung',
             'Saya merasa kesepian',
             'Saya merasa tidak punya harapan hidup',
@@ -27,7 +28,6 @@ class SymptomSeeder extends Seeder
             'Saya menarik diri dari orang lain',
             'Saya mengalami kesulitan untuk tidur hampir setiap hari',
             'Saya kehilangan berat badan secara drastis padahal tidak sedang menjalani program diet, dan kehilangan selera makan',
-            'Saya kehilangan minat terhadap aktivitas-aktivitas yang biasa dilakukan',
             'Saya sulit mendapatkan kesenangan dari aktivitas-aktivitas yang biasa dilakukan',
             'Saya sulit memusatkan perhatian',
             'Saya merasa percakapan adalah suatu pekerjaan yang melelahkan',
