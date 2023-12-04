@@ -46,7 +46,7 @@ class SymptomSeeder extends Seeder
             'Saya merasakan kesulitan yang lebih dalam membuat keputusan',
             'Saya memiliki keinginan untuk menyimpang dari pola hidup sehari-hari',
             'Saya cenderung menunda kegiatan yang tidak memberikan kepuasan segera',
-            'Saya lebih menyukai kegiatan pasif',
+            'Saya lebih menyukai kegiatan pasif, yakni kegiatan yang melibatkan sedikit aktivitas fisik',
             'Saya merasa bahwa orang-orang akan merasa lebih baik apabila saya tiada',
             'Saya pernah punya pikiran untuk mengakhiri hidup'
         ] as $item) Symptom::create(['name' => $item]);
