@@ -1,5 +1,5 @@
 # Depresi
-Sistem pakar skrining/diagnosis awal tingkat depresi yang saya kembangkan untuk keperluan skripsi. Menggunakan _forward chaining_ terhadap kemunculan gejala, total gejala yang muncul, dan skor frekuensi kemunculan gejala sebagai metode inferensi; dan _naive bayes_ sebagai metode perhitungan probabilitas.
+Sistem pakar skrining/diagnosis awal tingkat depresi yang saya kembangkan untuk keperluan skripsi. Menggunakan _forward chaining_ terhadap kemunculan gejala, total gejala yang muncul, dan skor frekuensi kemunculan gejala sebagai metode inferensi; dan _naive bayes_ dengan _laplace smoothing_ sebagai metode perhitungan probabilitas.
 
 ![image](https://user-images.githubusercontent.com/47256917/224542705-9163a030-b322-4709-86da-3b108c12fa16.png)
 ## Instalasi
